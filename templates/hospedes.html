@@ -8,6 +8,19 @@
 <body>
     <div class="container">
         <h1>Gerenciamento de Hóspedes</h1>
+
+        <form method="GET" action="{{ url_for('hospedes') }}">
+            <label for="nome">Filtrar por nome (ou inicial):</label>
+            <input type="text" name="nome" id="nome" placeholder="Nome ou inicial do hóspede" value="{{ request.args.get('nome', '') }}">
+            
+            <label for="ordenar">Ordenar por:</label>
+            <select name="ordenar" id="ordenar">
+                <option value="asc" {% if request.args.get('ordenar') == 'asc' %}selected{% endif %}>Crescente</option>
+                <option value="desc" {% if request.args.get('ordenar') == 'desc' %}selected{% endif %}>Decrescente</option>
+            </select>
+            
+            <button type="submit">Filtrar</button>
+
         <div>
             <a href="/add_hospede">Adicionar Hóspede</a>
         </div>

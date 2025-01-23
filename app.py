@@ -26,13 +26,28 @@ app.config['MYSQL_DB'] = 'db_projetoHotel'
 mysql = MySQL(app)
 
 # Listar hóspedes
-@app.route('/hospedes')
+@app.route('/hospedes', methods=['GET'])
 def hospedes():
+    nome_filtro = request.args.get('nome', '')  
+    ordem = request.args.get('ordenar', 'asc')  
+
+    if ordem == 'asc':
+        order_by = 'ASC'
+    else:
+        order_by = 'DESC'
+
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM hospede")
-    hospedes = cur.fetchall()
+
+    if nome_filtro:
+        cur.execute("SELECT * FROM hospede WHERE nome LIKE %s ORDER BY nome " + order_by, (nome_filtro + '%',))
+    else:
+        cur.execute("SELECT * FROM hospede ORDER BY nome " + order_by)
+
+    hospedes = cur.fetchall()  
     cur.close()
+
     return render_template('hospedes.html', hospedes=hospedes)
+
 
 @app.route('/add_hospede', methods=['GET', 'POST'])
 def add_hospede():
