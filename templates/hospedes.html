@@ -21,13 +21,16 @@
             
             <button type="submit">Filtrar</button>
 
+            <a href="{{ url_for('index') }}">Página Inicial</a>
+
         <div>
+            <br>
             <a href="/add_hospede">Adicionar Hóspede</a>
         </div>
         <table>
             <thead>
                 <tr>
-                    <th>ID</th>
+                    <th>ID</th> <br>
                     <th>Nome</th>
                     <th>CPF</th>
                     <th>Telefone</th>
@@ -37,8 +40,8 @@
             </thead>
             <tbody>
                 {% for hospede in hospedes %}
-                <tr>
-                    <td>{{ hospede[0] }}</td>
+                <tr> <br>
+                    <td>{{ hospede[0] }}</td> 
                     <td>{{ hospede[1] }}</td>
                     <td>{{ hospede[2] }}</td>
                     <td>{{ hospede[3] }}</td>

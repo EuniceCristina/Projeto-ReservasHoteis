@@ -63,8 +63,8 @@ def add_hospede():
         existing_hospede = cur.fetchone()
         
         if existing_hospede:
-            flash('Já existe um hóspede com este CPF ou e-mail. Tente novamente com dados diferentes.', 'error')
-            return redirect(url_for('add_hospede'))  
+            flash= ('Já existe um hóspede com este CPF ou e-mail. Tente novamente com dados diferentes.')
+            return render_template('add_hospedes.html', flash=flash)
 
         
         cur.execute("INSERT INTO hospede (nome, cpf, telefone, email) VALUES (%s, %s, %s, %s)",
@@ -114,6 +114,64 @@ def excluir_hospede(id):
 
     flash('Hóspede excluído com sucesso!')
     return redirect(url_for('hospedes'))
+
+if __name__ == '__main__':
+    app.run(debug=True)  
+
+
+@app.route('/quartos', methods=['GET','POST'])
+def quartos():
+    numero_filtro = request.args.get('numero', '')  
+    ordem = request.args.get('ordenar', 'asc')  
+
+    if ordem == 'asc':
+        order_by = 'ASC'
+    else:
+        order_by = 'DESC'
+
+    cursor = mysql.connection.cursor()
+
+    if numero_filtro:
+        cursor.execute("SELECT * FROM quarto WHERE numero LIKE %s ORDER BY numero " + order_by, (numero_filtro + '%',))
+    else:
+        cursor.execute("SELECT * FROM quarto ORDER BY numero " + order_by)
+
+    quartos = cursor.fetchall()
+    cursor.close()
+    return render_template('quartos.html', quartos=quartos)
+
+@app.route('/add_quartos', methods=['GET','POST'])
+def add_quartos():
+    if request.method == 'POST':
+        numero = request.form['numero']
+        tipo = request.form['tipo']
+        preco = request.form['preco']
+        capacidade = request.form['capacidade']
+        descricao = request.form['descricao']
+
+        cursor=mysql.connection.cursor()
+        cursor.execute(f"SELECT * FROM quarto WHERE numero = {numero}")
+        existing_quarto = cursor.fetchone()
+        
+        if existing_quarto:
+            flash = ('Já existe um quarto com este número. Tente novamente com dados difierentes.')
+            return render_template('add_quartos.html', flash=flash)
+        
+        cursor.execute("INSERT INTO quarto (numero, tipo, preco, capacidade, descricao) VALUES (%s, %s, %s, %s, %s)", (numero, tipo, preco, capacidade, descricao))
+        mysql.connection.commit()
+        cursor.close()
+        return redirect(url_for('quartos'))
+    return render_template('add_quartos.html')
+
+@app.route('/excluir_quarto/<int:id>', methods=['GET', 'POST'])
+def excluir_quarto(id):
+    cur = mysql.connection.cursor()
+    cur.execute("DELETE FROM quarto WHERE id = %s", (id,))
+    mysql.connection.commit()
+    cur.close()
+
+    flash('Hóspede excluído com sucesso!')
+    return redirect(url_for('quartos'))
 
 if __name__ == '__main__':
     app.run(debug=True)  

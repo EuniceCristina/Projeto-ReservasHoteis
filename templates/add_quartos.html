@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Adicionar quarto</h1>
+    <p style="color: red;">{{flash}}</p>
+    <form action="{{ url_for('add_quartos')}}" method="post">
+        <input type="number" name="numero" placeholder="Número"> 
+        <select name="tipo" id="tipo">
+            <option value="Quarto Solteiro">Quarto Solteiro</option>
+            <option value="Duplo Solteiro">Duplo Solteiro</option>
+            <option value="Quarto Casal">Quarto Casal</option>
+            <option value="Dormitórios">Dormitórios</option>
+        </select>
+        <input type="float" name="preco" placeholder="Preço">
+        <input type="number" name="capacidade" placeholder="Capacidade">
+        <input type="text" name="descricao" placeholder="Descrição">
+        <button>Enviar</button>
+    </form>
+</body>
+</html>
+
+
