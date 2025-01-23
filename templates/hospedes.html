@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciamento de Hóspedes</title>
+    <link rel="stylesheet" href="">
+<body>
+    <div class="container">
+        <h1>Gerenciamento de Hóspedes</h1>
+        <div>
+            <a href="/add_hospede">Adicionar Hóspede</a>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>CPF</th>
+                    <th>Telefone</th>
+                    <th>E-mail</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for hospede in hospedes %}
+                <tr>
+                    <td>{{ hospede[0] }}</td>
+                    <td>{{ hospede[1] }}</td>
+                    <td>{{ hospede[2] }}</td>
+                    <td>{{ hospede[3] }}</td>
+                    <td>{{ hospede[4] }}</td>
+                    <td>
+                        <a href="/edit_hospede/{{ hospede[0] }}" >Editar</a>
+                        <a href="/delete_hospede/{{ hospede[0] }}" onclick="return confirm('Tem certeza que deseja excluir este hóspede?');">Excluir</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
