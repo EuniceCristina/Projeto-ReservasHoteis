@@ -15,26 +15,25 @@ app.config['SECRET_KEY'] = 'senhadoprojeto'
 
 @app.route('/')
 def index():
-    return 'Bem vindo ao projeto de reservas de hoteís. '
+    return render_template('index.html')
 
 
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'senha'
+app.config['MYSQL_PASSWORD'] = ''
 app.config['MYSQL_DB'] = 'db_projetoHotel'
 
 mysql = MySQL(app)
 
 # Listar hóspedes
-@app.route('/')
-def listar_hospedes():
+@app.route('/hospedes')
+def hospedes():
     cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM hospede")
     hospedes = cur.fetchall()
     cur.close()
     return render_template('hospedes.html', hospedes=hospedes)
 
-# Adcionar hóspede
 @app.route('/add_hospede', methods=['GET', 'POST'])
 def add_hospede():
     if request.method == 'POST':
@@ -43,16 +42,26 @@ def add_hospede():
         telefone = request.form['telefone']
         email = request.form['email']
 
+       
         cur = mysql.connection.cursor()
+        cur.execute("SELECT * FROM hospede WHERE cpf = %s OR email = %s", (cpf, email))
+        existing_hospede = cur.fetchone()
+        
+        if existing_hospede:
+            flash('Já existe um hóspede com este CPF ou e-mail. Tente novamente com dados diferentes.', 'error')
+            return redirect(url_for('add_hospede'))  
+
+        
         cur.execute("INSERT INTO hospede (nome, cpf, telefone, email) VALUES (%s, %s, %s, %s)",
                     (nome, cpf, telefone, email))
         mysql.connection.commit()
         cur.close()
 
-        flash('Hóspede adicionado com sucesso!')
-        return redirect(url_for('hospedes'))
+        flash('Hóspede adicionado com sucesso!', 'success')
+        return redirect(url_for('hospedes'))  
 
-    return render_template('add_hospede.html')
+    return render_template('add_hospedes.html')  
+
 
 # Editar um hóspede
 @app.route('/edit_hospede/<int:id>', methods=['GET', 'POST'])
@@ -74,10 +83,11 @@ def edit_hospede(id):
         mysql.connection.commit()
         cur.close()
 
-        flash('Dados do hóspede atualizados com sucesso!')
+        flash('Dados do hóspede atualizados com sucesso!', 'success')
         return redirect(url_for('hospedes'))
 
-    return render_template('hospedes.html', hospede=hospede)
+    return render_template('edit_hospede.html', hospede=hospede)
+
 
 # Excluir hóspede
 @app.route('/excluir_hospede/<int:id>', methods=['GET', 'POST'])

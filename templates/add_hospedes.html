@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adicionar Hóspede</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Adicionar Hóspede</h1>
+        <form method="POST" action="/add_hospede">
+            <input type="hidden" name="form_submitted" value="true">
+            <label for="nome">Nome:</label>
+            <input type="text" id="nome" name="nome" required>
+
+            <label for="cpf">CPF:</label>
+            <input type="text" id="cpf" name="cpf" required>
+
+            <label for="telefone">Telefone:</label>
+            <input type="text" id="telefone" name="telefone" required>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+
+            <button type="submit">Adicionar Hóspede</button>
+        </form>
+    </div>
+</body>
+</html>
