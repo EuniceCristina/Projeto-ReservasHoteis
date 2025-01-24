@@ -6,6 +6,7 @@
     <title>Reservas</title>
 </head>
 <body>
+    <div>
     <h1>Lista de Reservas</h1>
 
     <form method="POST" action="{{ url_for('reservas') }}">
@@ -20,6 +21,12 @@
 
         <button type="submit">Filtrar</button>
     </form>
+    <a href="{{url_for('add_reserva')}}">Adicionar reserva</a>
+    </div>
+    <div>
+        <a href="{{url_for('relatorios')}}">Relatórios avançados</a>
+    </div>
+
 
     <h2>Reservas Encontradas</h2>
 

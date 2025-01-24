@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div>
+        <h1>Relátorios avançados</h1>
+        <H3>Total de reservas por hóspede:</H3>
+        <label for="total">Escolha um hospede: </label>
+        <select name="total" id="total">
+            {%for hospede in hospedes%}
+            <option value="{{hospede[0]}}">{{hospede[1]}}</option>
+            {%endfor%}
+        </select>
+        <p>Périodo:</p>
+        <label for="data1">De</label>
+        <input type="date" id="data1" name="data1">
+        <label for="data1">Até</label>
+        <input type="date" id="data2" name="data2">
+        <button>Enviar</button>
+    </div>
+        
+</body>
+</html>

@@ -179,7 +179,8 @@ def reservas():
     cur = mysql.connection.cursor()
     
     query = """
-        SELECT r.id, h.nome AS hospede, q.numero AS quarto, r.checkin, r.checkout, r.total 
+        SELECT r.id, h.nome AS hospede, q.numero AS quarto, checkin, 
+        checkout, total 
         FROM reserva r
         JOIN hospede h ON r.hos_id = h.id
         JOIN quarto q ON r.quarto_id = q.id
@@ -189,13 +190,13 @@ def reservas():
     params = []
 
     if checkin_filter:
-        conditions.append("r.checkin = %s")
+        conditions.append("checkin = %s")
         params.append(checkin_filter)
 
     if conditions:
         query += " WHERE " + " AND ".join(conditions)
     
-    query += f" ORDER BY r.checkin {ordem}"
+    query += f" ORDER BY checkin {ordem}"
 
     cur.execute(query, tuple(params))
     reservas = cur.fetchall()
@@ -291,3 +292,12 @@ def excluir_reserva(id):
 
 if __name__ == '__main__':
     app.run(debug=True)  
+
+@app.route('/relatorios')
+def relatorios():
+    cur = mysql.connection.cursor()
+    cur.execute('SELECT id,nome FROM hospede')
+    hospedes = cur.fetchall()
+    cur.close()
+
+    return render_template('relatorios.html', hospedes=hospedes)
