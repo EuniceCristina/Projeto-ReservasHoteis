@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt_br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adicionar Reserva</title>
+</head>
+<body>
+    <h1>Adicionar Nova Reserva</h1>
+    <form method="POST" action="{{ url_for('add_reserva') }}">
+        <label for="hospede_id">Hóspede:</label>
+        <select name="hos_id" id="hospede_id" required>
+            {% for hospede in hospedes %}
+            <option value="{{ hospede[0] }}">{{ hospede[1] }}</option>
+            {% endfor %}
+        </select><br><br>
+    
+        <label for="quarto_id">Quarto:</label>
+        <select name="quarto_id" id="quarto_id" required>
+            {% for quarto in quartos %}
+            <option value="{{ quarto[0] }}">{{ quarto[1] }}</option>
+            {% endfor %}
+        </select><br><br>
+    
+        <label for="checkin">Data de Check-In:</label>
+        <input type="date" name="checkin" id="checkin" required><br><br>
+    
+        <label for="checkout">Data de Check-Out:</label>
+        <input type="date" name="checkout" id="checkout" required><br><br>
+    
+        <button type="submit">Salvar</button>
+    </form>
+    
+</body>
+</html>

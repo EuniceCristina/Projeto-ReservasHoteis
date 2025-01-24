@@ -21,10 +21,13 @@ descricao text
 create table reserva(
 id int not null primary key auto_increment,
 hos_id int,
+quarto_id int not nuul,
 checkin date,
-ckeckout date,
+checkout date,
 total float,
-FOREIGN KEY (hos_id) REFERENCES hospede(id));
+FOREIGN KEY (hos_id) REFERENCES hospede(id)
+FOREIGN KEY (quarto_id) REFERENCES quarto(id)
+);
 
 create table reserva_quarto (
 	id int not null primary key auto_increment,

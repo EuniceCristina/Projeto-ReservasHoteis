@@ -30,8 +30,9 @@ class Quarto():
 
 class Reserva():
     id : str 
-    def __init__(self, hos_id, checkin, checkout, total):
+    def __init__(self, hos_id, quarto_id, checkin, checkout, total):
         self.hos_id = hos_id
+        self.quarto_id = quarto_id
         self.checkin = checkin
         self.checkout = checkout
         self.total =total

@@ -2,6 +2,7 @@ from flask import Flask, render_template, redirect, request, url_for, flash
 #from flask_login import LoginManager, login_required, login_user, logout_user, current_user
 from models import obter_conexão
 from flask_mysqldb import MySQL
+from datetime import datetime
 
 #login_manager = LoginManager()
 
@@ -25,7 +26,6 @@ app.config['MYSQL_DB'] = 'db_projetoHotel'
 
 mysql = MySQL(app)
 
-# Listar hóspedes
 @app.route('/hospedes', methods=['GET'])
 def hospedes():
     nome_filtro = request.args.get('nome', '')  
@@ -63,8 +63,8 @@ def add_hospede():
         existing_hospede = cur.fetchone()
         
         if existing_hospede:
-            flash= ('Já existe um hóspede com este CPF ou e-mail. Tente novamente com dados diferentes.')
-            return render_template('add_hospedes.html', flash=flash)
+            flash('Já existe um hóspede com este CPF ou e-mail. Tente novamente com dados diferentes.')
+            return render_template('add_hospedes.html')
 
         
         cur.execute("INSERT INTO hospede (nome, cpf, telefone, email) VALUES (%s, %s, %s, %s)",
@@ -78,7 +78,6 @@ def add_hospede():
     return render_template('add_hospedes.html')  
 
 
-# Editar um hóspede
 @app.route('/edit_hospede/<int:id>', methods=['GET', 'POST'])
 def edit_hospede(id):
     cur = mysql.connection.cursor()
@@ -104,7 +103,6 @@ def edit_hospede(id):
     return render_template('edit_hospede.html', hospede=hospede)
 
 
-# Excluir hóspede
 @app.route('/excluir_hospede/<int:id>', methods=['GET', 'POST'])
 def excluir_hospede(id):
     cur = mysql.connection.cursor()
@@ -115,8 +113,6 @@ def excluir_hospede(id):
     flash('Hóspede excluído com sucesso!')
     return redirect(url_for('hospedes'))
 
-if __name__ == '__main__':
-    app.run(debug=True)  
 
 
 @app.route('/quartos', methods=['GET','POST'])
@@ -163,6 +159,7 @@ def add_quartos():
         return redirect(url_for('quartos'))
     return render_template('add_quartos.html')
 
+
 @app.route('/excluir_quarto/<int:id>', methods=['GET', 'POST'])
 def excluir_quarto(id):
     cur = mysql.connection.cursor()
@@ -172,6 +169,125 @@ def excluir_quarto(id):
 
     flash('Hóspede excluído com sucesso!')
     return redirect(url_for('quartos'))
+
+
+@app.route('/reservas', methods=['GET', 'POST'])
+def reservas():
+    checkin_filter = request.form.get('checkin_filter')  
+    ordem = request.form.get('ordem', 'asc')  
+
+    cur = mysql.connection.cursor()
+    
+    query = """
+        SELECT r.id, h.nome AS hospede, q.numero AS quarto, r.checkin, r.checkout, r.total 
+        FROM reserva r
+        JOIN hospede h ON r.hos_id = h.id
+        JOIN quarto q ON r.quarto_id = q.id
+    """
+
+    conditions = []
+    params = []
+
+    if checkin_filter:
+        conditions.append("r.checkin = %s")
+        params.append(checkin_filter)
+
+    if conditions:
+        query += " WHERE " + " AND ".join(conditions)
+    
+    query += f" ORDER BY r.checkin {ordem}"
+
+    cur.execute(query, tuple(params))
+    reservas = cur.fetchall()
+    cur.close()
+
+    reservas_formatadas = []
+    for reserva in reservas:
+        checkin = reserva[3].strftime('%d/%m/%Y')  
+        checkout = reserva[4].strftime('%d/%m/%Y')  
+        reservas_formatadas.append(reserva[:3] + (checkin, checkout, reserva[5]))
+
+    return render_template('reservas.html', reservas=reservas_formatadas, checkin_filter=checkin_filter, ordem=ordem)
+
+
+
+
+@app.route('/add_reserva', methods=['GET', 'POST'])
+def add_reserva():
+    if request.method == 'POST':
+        hos_id = request.form['hos_id']
+        quarto_id = request.form['quarto_id']
+        checkin = request.form['checkin']
+        checkout = request.form['checkout']
+
+        cur = mysql.connection.cursor()
+
+        cur.execute("""
+            SELECT * FROM reserva 
+            WHERE quarto_id = %s AND 
+            (
+                (checkin BETWEEN %s AND %s) OR 
+                (checkout BETWEEN %s AND %s) OR 
+                (checkin <= %s AND checkout >= %s)
+            )
+        """, (quarto_id, checkin, checkout, checkin, checkout, checkin, checkout))
+        conflito = cur.fetchone()
+
+        if conflito:
+            flash('O quarto já está reservado para o período selecionado. Escolha outras datas ou outro quarto.', 'error')
+            cur.close()
+            return redirect(url_for('add_reserva'))
+
+        checkin_date = datetime.strptime(checkin, '%Y-%m-%d')
+        checkout_date = datetime.strptime(checkout, '%Y-%m-%d')
+        dias = (checkout_date - checkin_date).days
+
+        if dias <= 0:
+            flash('A data de check-out deve ser posterior à data de check-in.', 'error')
+            cur.close()
+            return redirect(url_for('add_reserva'))
+
+
+        cur.execute("SELECT preco FROM quarto WHERE id = %s", (quarto_id,))
+        preco_quarto = cur.fetchone()
+
+        if not preco_quarto:
+            flash('Quarto inválido selecionado. Tente novamente.', 'error')
+            cur.close()
+            return redirect(url_for('add_reserva'))
+
+        total = preco_quarto[0] * dias
+
+        cur.execute("""
+            INSERT INTO reserva (hos_id, quarto_id, checkin, checkout, total) 
+            VALUES (%s, %s, %s, %s, %s)
+        """, (hos_id, quarto_id, checkin, checkout, total))
+        mysql.connection.commit()
+        cur.close()
+
+        flash('Reserva adicionada com sucesso!', 'success')
+        return redirect(url_for('reservas'))
+
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT id, nome FROM hospede")
+    hospedes = cur.fetchall()
+    cur.execute("SELECT id, numero FROM quarto")
+    quartos = cur.fetchall()
+    cur.close()
+
+    return render_template('add_reserva.html', hospedes=hospedes, quartos=quartos)
+
+
+
+@app.route('/excluir_reserva/<int:id>', methods=['GET', 'POST'])
+def excluir_reserva(id):
+    cur = mysql.connection.cursor()
+    cur.execute("DELETE FROM reserva WHERE id = %s", (id,))
+    mysql.connection.commit()
+    cur.close()
+
+    flash('Reserva excluída com sucesso!')
+    return redirect(url_for('reservas'))
 
 if __name__ == '__main__':
     app.run(debug=True)  

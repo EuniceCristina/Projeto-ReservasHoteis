@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reservas</title>
+</head>
+<body>
+    <h1>Lista de Reservas</h1>
+
+    <form method="POST" action="{{ url_for('reservas') }}">
+        <label for="checkin_filter">Filtrar por Data de Check-in:</label>
+        <input type="date" id="checkin_filter" name="checkin_filter" value="{{ checkin_filter }}">
+
+        <label for="ordem">Ordem:</label>
+        <select name="ordem" id="ordem">
+            <option value="asc" {% if ordem == 'asc' %}selected{% endif %}>Crescente</option>
+            <option value="desc" {% if ordem == 'desc' %}selected{% endif %}>Decrescente</option>
+        </select>
+
+        <button type="submit">Filtrar</button>
+    </form>
+
+    <h2>Reservas Encontradas</h2>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Hóspede</th>
+                <th>Quarto</th>
+                <th>Check-In</th>
+                <th>Check-Out</th>
+                <th>Valor Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if reservas %}
+                {% for reserva in reservas %}
+                    <tr>
+                        <td>{{ reserva[0] }}</td>
+                        <td>{{ reserva[1] }}</td>
+                        <td>{{ reserva[2] }}</td>
+                        <td>{{ reserva[3] }}</td>
+                        <td>{{ reserva[4] }}</td>
+                        <td>{{ reserva[5] }}</td>
+                    </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="6">Nenhuma reserva encontrada com os critérios fornecidos.</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+
+    <br>
+    <a href="{{ url_for('index') }}">Página Inicial</a>
+</body>
+</html>
