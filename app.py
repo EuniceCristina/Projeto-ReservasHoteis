@@ -1,24 +1,17 @@
 from flask import Flask, render_template, redirect, request, url_for, flash
-#from flask_login import LoginManager, login_required, login_user, logout_user, current_user
-from models import obter_conexão
 from flask_mysqldb import MySQL
 from datetime import datetime
 
-#login_manager = LoginManager()
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'senhadoprojeto'
 
-#login_manager.init_app(app)
-#@login_manager.user_loader
-#def load_user(user_id):
-  #  return User.get(user_id)
-
+#configiração página inicial
 @app.route('/')
 def index():
     return render_template('index.html')
 
-
+#configuração do banco
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = ''
@@ -26,6 +19,7 @@ app.config['MYSQL_DB'] = 'db_projetoHotel'
 
 mysql = MySQL(app)
 
+#página de hospedes
 @app.route('/hospedes', methods=['GET'])
 def hospedes():
     nome_filtro = request.args.get('nome', '')  
@@ -48,7 +42,7 @@ def hospedes():
 
     return render_template('hospedes.html', hospedes=hospedes)
 
-
+#página para adicionar hóspedes
 @app.route('/add_hospede', methods=['GET', 'POST'])
 def add_hospede():
     if request.method == 'POST':
@@ -59,12 +53,15 @@ def add_hospede():
 
        
         cur = mysql.connection.cursor()
-        cur.execute("SELECT * FROM hospede WHERE cpf = %s OR email = %s", (cpf, email))
-        existing_hospede = cur.fetchone()
+        cur.execute("SELECT * FROM hospede WHERE cpf = %s",(cpf,))
+        existing_cpf = cur.fetchone()
+
+        cur.execute("SELECT * FROM hospede WHERE email = %s", (email,))
+        existing_email = cur.fetchone()
         
-        if existing_hospede:
-            flash('Já existe um hóspede com este CPF ou e-mail. Tente novamente com dados diferentes.')
-            return render_template('add_hospedes.html')
+        if existing_cpf or existing_email:
+            texto=('Já existe um hóspede com este CPF ou e-mail. Tente novamente com dados diferentes.')
+            return render_template('add_hospedes.html', flash=texto)
 
         
         cur.execute("INSERT INTO hospede (nome, cpf, telefone, email) VALUES (%s, %s, %s, %s)",
@@ -72,12 +69,12 @@ def add_hospede():
         mysql.connection.commit()
         cur.close()
 
-        flash('Hóspede adicionado com sucesso!', 'success')
+        flash ('Hóspede adicionado com sucesso!', 'success')
         return redirect(url_for('hospedes'))  
 
     return render_template('add_hospedes.html')  
 
-
+#página para editar hóspedes
 @app.route('/edit_hospede/<int:id>', methods=['GET', 'POST'])
 def edit_hospede(id):
     cur = mysql.connection.cursor()
@@ -102,7 +99,7 @@ def edit_hospede(id):
 
     return render_template('edit_hospede.html', hospede=hospede)
 
-
+#página para excluir hóspedes
 @app.route('/excluir_hospede/<int:id>', methods=['GET', 'POST'])
 def excluir_hospede(id):
     cur = mysql.connection.cursor()
@@ -114,7 +111,7 @@ def excluir_hospede(id):
     return redirect(url_for('hospedes'))
 
 
-
+#página dos quartos
 @app.route('/quartos', methods=['GET','POST'])
 def quartos():
     numero_filtro = request.args.get('numero', '')  
@@ -136,6 +133,7 @@ def quartos():
     cursor.close()
     return render_template('quartos.html', quartos=quartos)
 
+#página pada adicionar novos quartos
 @app.route('/add_quartos', methods=['GET','POST'])
 def add_quartos():
     if request.method == 'POST':
@@ -159,7 +157,7 @@ def add_quartos():
         return redirect(url_for('quartos'))
     return render_template('add_quartos.html')
 
-
+#página para excluir quartos
 @app.route('/excluir_quarto/<int:id>', methods=['GET', 'POST'])
 def excluir_quarto(id):
     cur = mysql.connection.cursor()
@@ -170,7 +168,7 @@ def excluir_quarto(id):
     flash('Hóspede excluído com sucesso!')
     return redirect(url_for('quartos'))
 
-
+#página de reservas
 @app.route('/reservas', methods=['GET', 'POST'])
 def reservas():
     checkin_filter = request.form.get('checkin_filter')  
@@ -211,8 +209,7 @@ def reservas():
     return render_template('reservas.html', reservas=reservas_formatadas, checkin_filter=checkin_filter, ordem=ordem)
 
 
-
-
+#página para adicionar reservas
 @app.route('/add_reserva', methods=['GET', 'POST'])
 def add_reserva():
     if request.method == 'POST':
@@ -279,7 +276,7 @@ def add_reserva():
     return render_template('add_reserva.html', hospedes=hospedes, quartos=quartos)
 
 
-
+#página para excluir reservas
 @app.route('/excluir_reserva/<int:id>', methods=['GET', 'POST'])
 def excluir_reserva(id):
     cur = mysql.connection.cursor()
@@ -293,6 +290,7 @@ def excluir_reserva(id):
 if __name__ == '__main__':
     app.run(debug=True)  
 
+#página dos relátorios avançados
 @app.route('/relatorios')
 def relatorios():
     cur = mysql.connection.cursor()
@@ -302,6 +300,7 @@ def relatorios():
 
     return render_template('relatorios.html', hospedes=hospedes)
 
+#página para relátorio total de reservas
 @app.route('/total_reservas', methods=['GET','POST'])
 def total_reservas():
     if request.method=='POST':
@@ -314,6 +313,7 @@ def total_reservas():
         return render_template('total_reservas.html',totais=totais) 
     return render_template('total_reservas.html')
 
+#página para relátorio de reservas acima de 2000,00
 @app.route('/reservas_acima', methods=['GET','POST'])
 def reservas_acima():
     cur = mysql.connect.cursor()
@@ -322,6 +322,7 @@ def reservas_acima():
     cur.close()
     return render_template('reservas_acima.html',totais=totais)
 
+#página para relátorio de quartos mais reservados
 @app.route('/quartos_reservados', methods=['GET','POST'])
 def quartos_reservados():
      if request.method=='POST':
@@ -341,8 +342,20 @@ def quartos_reservados():
         cur.close()
         return render_template('quartos_reservados.html',totais=totais)
 
+#página para relátorio de quartos não reservados
 @app.route('/nao_reservados', methods=['GET','POST'])
 def nao_reservados():
-    pass
+    cur = mysql.connect.cursor()
+    query = '''
+        SELECT q.numero FROM quarto as q
+        WHERE q.id NOT IN (SELECT r.quarto_id FROM reserva r)
+        '''
+    
+    cur.execute(query)
+    totais = cur.fetchall()
+    cur.close()
+    if request.method=='POST':
+        return render_template('nao_reservados.html',totais=totais)
+    return render_template('nao_reservados.html',totais=totais)
 
 

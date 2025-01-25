@@ -4,7 +4,7 @@ use db_projetoHotel;
 create table hospede(
 id int not null primary key auto_increment,
 nome varchar(50),
-cpf int ,
+cpf varchar(50) ,
 telefone varchar(20),
 email varchar(50)
 );
