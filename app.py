@@ -301,3 +301,48 @@ def relatorios():
     cur.close()
 
     return render_template('relatorios.html', hospedes=hospedes)
+
+@app.route('/total_reservas', methods=['GET','POST'])
+def total_reservas():
+    if request.method=='POST':
+        data1 = request.form['data1']
+        data2 = request.form['data2']
+        cur = mysql.connect.cursor()
+        cur.execute('SELECT nome, SUM(total) FROM hospede as h JOIN reserva as r ON h.id=r.hos_id WHERE checkin BETWEEN %s and %s GROUP BY nome ',(data1,data2))
+        totais = cur.fetchall()
+        cur.close()
+        return render_template('total_reservas.html',totais=totais) 
+    return render_template('total_reservas.html')
+
+@app.route('/reservas_acima', methods=['GET','POST'])
+def reservas_acima():
+    cur = mysql.connect.cursor()
+    cur.execute("SELECT nome, total FROM hospede as h JOIN reserva as r ON h.id = r.hos_id WHERE total>='2000' ")
+    totais = cur.fetchall()
+    cur.close()
+    return render_template('reservas_acima.html',totais=totais)
+
+@app.route('/quartos_reservados', methods=['GET','POST'])
+def quartos_reservados():
+     if request.method=='POST':
+        dias = request.form['tempo']
+        cur = mysql.connect.cursor()
+        dias = int(dias)  
+        query = '''
+        SELECT numero, COUNT(r.quarto_id) AS quartos
+        FROM quarto AS q
+        JOIN reserva AS r ON q.id = r.quarto_id
+        WHERE checkin BETWEEN NOW() - INTERVAL %s DAY AND NOW()
+        GROUP BY numero
+        ORDER BY quartos DESC LIMIT 10
+        '''
+        cur.execute(query, (dias,))
+        totais = cur.fetchall()
+        cur.close()
+        return render_template('quartos_reservados.html',totais=totais)
+
+@app.route('/nao_reservados', methods=['GET','POST'])
+def nao_reservados():
+    pass
+
+

@@ -7,7 +7,10 @@
 </head>
 <body>
     <h1>Adicionar Nova Reserva</h1>
+    <a href="{{ url_for('reservas') }}">Voltar</a>
+    
     <form method="POST" action="{{ url_for('add_reserva') }}">
+        <br>
         <label for="hospede_id">Hóspede:</label>
         <select name="hos_id" id="hospede_id" required>
             {% for hospede in hospedes %}
