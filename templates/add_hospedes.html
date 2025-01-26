@@ -1,15 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Adicionar Hóspede</title>
-
+    <link rel="stylesheet" href="static/add_hospedes.css">
 </head>
 <body>
     <div class="container">
+        <div class="head">
         <h1>Adicionar Hóspede</h1>
         <a href="{{ url_for('hospedes') }}">Voltar</a>
+        </div>
         <p style="color: red;">{{flash}}</p>
 
         <form method="POST" action="/add_hospede">

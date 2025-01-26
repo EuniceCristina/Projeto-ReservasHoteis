@@ -7,7 +7,9 @@
 </head>
 <body>
     <h1>Editar Hóspede</h1>
+    
     <a href="{{ url_for('hospedes') }}">Voltar</a>
+     <p style="color: red;">{{flash}}</p>
     <form method="POST">
         <br>
         <input type="hidden" name="id" value="{{ hospede[0] }}">

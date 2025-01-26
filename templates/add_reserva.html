@@ -4,10 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Adicionar Reserva</title>
+    <link rel="stylesheet" href="static/add_reserva.css">
 </head>
 <body>
-    <h1>Adicionar Nova Reserva</h1>
-    <a href="{{ url_for('reservas') }}">Voltar</a>
+    <div class="container">
+        <div class="head">
+            <h1>Adicionar nova reserva</h1>
+            <a href="{{ url_for('reservas') }}">Voltar</a>
+            </div>
+            <p style="color: red;">{{flash}}</p>
     
     <form method="POST" action="{{ url_for('add_reserva') }}">
         <br>
@@ -33,6 +38,8 @@
     
         <button type="submit">Salvar</button>
     </form>
+    </div>
+    
     
 </body>
 </html>

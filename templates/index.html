@@ -3,58 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestão de Hotel</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f9;
-        }
-        .header {
-            background-color: #007BFF;
-            color: white;
-            padding: 15px;
-            text-align: center;
-        }
-        .menu {
-            display: flex;
-            justify-content: center;
-            background-color: #333;
-        }
-        .menu a {
-            color: white;
-            padding: 14px 20px;
-            text-decoration: none;
-            text-align: center;
-        }
-        .menu a:hover {
-            background-color: #ddd;
-            color: black;
-        }
-        .content {
-            padding: 20px;
-        }
-    </style>
+    <title>GrandHotel</title>
+    <link rel="stylesheet" href="static/index.css">
 </head>
 <body>
 
     <div class="header">
-        <h1>Gestão de Hotel</h1>
-        <p>Bem-vindo ao sistema de gerenciamento de hotel</p>
+        <h1>GrandHotel</h1>
+        <p>Bem-vindo ao maior sistema de hoteis do mundo</p>
     </div>
 
     <div class="menu">
         <a href="{{ url_for('hospedes') }}">Hóspedes</a>
-        <a href="{{ url_for('quartos') }}">Quartos</a>
+        <a href="{{ url_for('quartos') }}">Hospedagens</a>
         <a href="{{ url_for('reservas') }}">Reservas</a>
 
     </div>
 
-    <div class="content">
-        {% block content %}
-        {% endblock %}
-    </div>
+   
 
 </body>
 </html>

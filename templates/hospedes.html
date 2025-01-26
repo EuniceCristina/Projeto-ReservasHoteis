@@ -4,21 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerenciamento de Hóspedes</title>
-    <link rel="stylesheet" href="">
-    <style>
-        td,th{
-            width: 100px;
-        }
-    </style>
+    <link rel="stylesheet" href="static/hospede.css">
 <body>
     <div class="container">
-        <h1>Gerenciamento de Hóspedes</h1>
+        <div class="head">
+            <h1>Gerenciamento de Hóspedes</h1>
+            <a href="{{ url_for('index') }}">Página Inicial</a>
+            </div>
+        
 
         <form method="GET" action="{{ url_for('hospedes') }}">
             <label for="nome">Filtrar por nome (ou inicial):</label>
             <input type="text" name="nome" id="nome" placeholder="Nome ou inicial do hóspede" value="{{ request.args.get('nome', '') }}">
             
-            <label for="ordenar">Ordenar por:</label>
+        </br>
+            <label for="ordenar">Ordenar por:</label><br>
             <select name="ordenar" id="ordenar">
                 <option value="asc" {% if request.args.get('ordenar') == 'asc' %}selected{% endif %}>Crescente</option>
                 <option value="desc" {% if request.args.get('ordenar') == 'desc' %}selected{% endif %}>Decrescente</option>
@@ -26,7 +26,7 @@
             
             <button type="submit">Filtrar</button>
 
-            <a href="{{ url_for('index') }}">Página Inicial</a>
+            
 
         <div>
             <br>
