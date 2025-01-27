@@ -2,7 +2,7 @@
     --cor-primaria: #007bff; 
     --cor-secundaria: #6c757d; 
     --cor-texto: #ffffff; 
-    --cor-fundo: #f8f9fa;
+    --cor-fundo: #e9ecef; 
     --cor-hover: #0056b3; 
     --cor-acento: #ffd700; 
 }
@@ -20,20 +20,12 @@ body {
     padding: 20px;
 }
 
-.head{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    align-items: center;
-    width: 90%;
-    margin-left: 5%;
-}
+
 h1 {
     font-size: 2rem;
     color: var(--cor-primaria);
     margin-bottom: 20px;
 }
-
 
 .container {
     display: flex;
@@ -59,7 +51,7 @@ h1 {
     border-radius: 8px;
     background-color: var(--cor-fundo);
     color: var(--cor-secundaria);
-    width: 80%;
+    width: 90%;
 }
 
 .container input:focus, .container select:focus {
@@ -68,45 +60,54 @@ h1 {
     box-shadow: 0px 0px 4px var(--cor-primaria);
 }
 
-
 .container button {
     background-color: var(--cor-primaria);
     color: var(--cor-texto);
     border: none;
+    margin-top: 10px;
     padding: 10px 20px;
     font-size: 1rem;
     border-radius: 25px;
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.2s ease;
+    width: 10%;
 }
 
 .container button:hover {
     background-color: var(--cor-acento);
-    color: var(--cor-secundaria);
+    color: var(--cor-texto);
     transform: scale(1.05);
 }
 
-
+.head{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 90%;
+    margin-left: 5%;
+}
 .container a {
     color: var(--cor-texto);
     font-size: 1rem;
     text-decoration: none;
     transition: color 0.3s ease;
+    margin-top:10px ;
 }
 
 .container a:hover {
     color: var(--cor-primaria);
 }
 
+
 div a {
     display: inline-block;
+    margin-top: 10px;
     padding: 10px 20px;
     background-color: var(--cor-secundaria);
     color: var(--cor-texto);
     text-decoration: none;
     border-radius: 25px;
     margin-top: 15px;
-    margin-bottom: 10px;
     transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
@@ -115,9 +116,11 @@ div a:hover {
     transform: scale(1.05);
 }
 
+
 table {
     width: 100%;
     max-width: 1000px;
+    margin-top: 30px;
     border-collapse: collapse;
 }
 
@@ -140,11 +143,12 @@ td {
 
 tr:hover {
     background-color: var(--cor-acento);
-    color: var(--cor-secundaria);
+    color: var(--cor-texto);
 }
 
 a {
-    color: var(--cor-primaria);
+    
+    color: white;
     text-decoration: none;
     font-weight: bold;
     transition: color 0.3s ease;
@@ -153,6 +157,10 @@ a {
 a:hover {
     color: var(--cor-acento);
 }
+
+#adicionar{
+    align-self: center;
+    margin-left: 40%;
 
 @media (max-width: 768px) {
     .container {

@@ -311,6 +311,7 @@ def total_reservas():
         cur.execute('SELECT nome, SUM(total) FROM hospede as h JOIN reserva as r ON h.id=r.hos_id WHERE checkin BETWEEN %s and %s GROUP BY nome ',(data1,data2))
         totais = cur.fetchall()
         cur.close()
+        
         return render_template('total_reservas.html',totais=totais) 
     return render_template('total_reservas.html')
 

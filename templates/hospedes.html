@@ -18,22 +18,18 @@
             <input type="text" name="nome" id="nome" placeholder="Nome ou inicial do hóspede" value="{{ request.args.get('nome', '') }}">
             
         </br>
-            <label for="ordenar">Ordenar por:</label><br>
+            <label for="ordenar">Ordenar por nome:</label><br>
             <select name="ordenar" id="ordenar">
                 <option value="asc" {% if request.args.get('ordenar') == 'asc' %}selected{% endif %}>Crescente</option>
                 <option value="desc" {% if request.args.get('ordenar') == 'desc' %}selected{% endif %}>Decrescente</option>
             </select>
             
             <button type="submit">Filtrar</button>
-
             
-
-        <div>
-            <br>
-            <a href="/add_hospede">Adicionar Hóspede</a>
-    
-        </div>
+        </form>
+        <div><a id="adicionar" href="/add_hospede">Adicionar Hóspede</a></div>
         <table>
+            
             <thead>
                 <tr>
                     <th>ID</th> 
@@ -46,7 +42,7 @@
             </thead>
             <tbody>
                 {% for hospede in hospedes %}
-                <tr> <br>
+                <tr>
                     <td>{{ hospede[0] }}</td> 
                     <td>{{ hospede[1] }}</td>
                     <td>{{ hospede[2] }}</td>
