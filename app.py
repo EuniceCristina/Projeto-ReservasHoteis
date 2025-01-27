@@ -341,7 +341,7 @@ def quartos_reservados():
         cur.execute(query, (dias,))
         totais = cur.fetchall()
         cur.close()
-        return render_template('quartos_reservados.html',totais=totais)
+        return render_template('quartos_reservados.html',totais=totais, dias=dias)
 
 #página para relátorio de quartos não reservados
 @app.route('/nao_reservados', methods=['GET','POST'])

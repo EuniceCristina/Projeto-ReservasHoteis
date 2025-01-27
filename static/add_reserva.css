@@ -81,7 +81,7 @@ form {
 label {
     font-weight: bold;
     text-align: left;
-    margin-bottom: 5px;
+    margin-bottom: 3px;
     color: var(--cor-secundaria);
 }
 
@@ -92,6 +92,7 @@ select, input {
     border-radius: 8px;
     background-color: var(--cor-fundo);
     color:white;
+    margin-bottom: 10px;
 }
 
 select, input:focus {

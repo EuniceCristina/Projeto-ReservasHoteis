@@ -1,204 +1,60 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quartos mais reservados</title>
-    <style>
-        :root {
-            --cor-primaria: #007bff; 
-            --cor-secundaria: #6c757d; 
-            --cor-texto: #ffffff; 
-            --cor-fundo: #e9ecef; 
-            --cor-hover: #0056b3; 
-            --cor-acento: #ffd700; 
-        }
-
-        body {
-            margin: 0;
-            font-family: 'Poppins', sans-serif;
-            background-color: var(--cor-fundo);
-            color: var(--cor-secundaria);
-            line-height: 1.6;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-        }
-
-        h1 {
-            font-size: 2rem;
-            color: var(--cor-primaria);
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-
-        h3 {
-            font-size: 1.5rem;
-            color: var(--cor-secundaria);
-            margin-bottom: 15px;
-        }
-
-
-        a {
-            display: inline-block;
-            margin-bottom: 20px;
-            padding: 10px 20px;
-            background-color: var(--cor-secundaria);
-            color: var(--cor-texto);
-            text-decoration: none;
-            border-radius: 25px;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-        }
-
-        a:hover {
-            background-color: var(--cor-hover);
-            transform: scale(1.05);
-        }
-
-
-        table {
-            width: 100%;
-            max-width: 800px;
-            margin-top: 20px;
-            border-collapse: collapse;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-            background-color: var(--cor-texto);
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border: 1px solid var(--cor-secundaria);
-            font-size: 1rem;
-        }
-
-        th {
-            background-color: var(--cor-primaria);
-            color: var(--cor-texto);
-        }
-
-        td {
-            background-color: var(--cor-fundo);
-            color: var(--cor-secundaria);
-        }
-
-        tr:hover {
-            background-color: var(--cor-acento);
-            color: var(--cor-secundaria);
-        }
-        .head{
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 50%;
-            margin-left: 5%;
-        }
-        
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 1.5rem;
-            }
-
-            h3 {
-                font-size: 1.2rem;
-            }
-
-            table {
-                font-size: 0.9rem;
-            }
-
-            th, td {
-                padding: 10px;
-            }
-        }
-    </style>
+    <title>Gerenciamento de Quartos</title>
+    <link rel="stylesheet" href="static/quartos.css">
 </head>
 <body>
-    <div class="head"><h1>Quartos mais reservados</h1>
-        <a href="{{ url_for('relatorios') }}">Voltar</a></div>
-    
-    
-    <h3>10 quartos mais reservados:</h3>
-    <table><!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Document</title>
-            <link rel="stylesheet" href="static/quartos.css">
-        </head>
-        <body>
-            <div class="container">
-                <div class="head">
-                    <h1>Gerenciamento de Quartos</h1>
-                
-                </div>
-                
-                <form method="GET" action="{{ url_for('quartos') }}">
-                    <label for="nome">Filtrar por numero do quarto:</label>
-                    <input type="text" name="numero" id="numero" placeholder="Número do quarto" value="{{ request.args.get('numero', '') }}">
-                    
-                    <label for="ordenar">Ordenar por:</label>
-                    <select name="ordenar" id="ordenar">
-                        <option value="asc" {% if request.args.get('ordenar') == 'asc' %}selected{% endif %}>Crescente</option>
-                        <option value="desc" {% if request.args.get('ordenar') == 'desc' %}selected{% endif %}>Decrescente</option>
-                    </select>
-                    
-                    <button type="submit">Filtrar</button>
-                     <br>
-            </div>
-            <div>
-                <br>
-                
-                <a href="{{ url_for('add_quartos')}} ">Adicionar quarto</a>
-            </div>
+    <div class="container">
+        <div class="head"><h1>Gerenciamento de Quartos</h1>
+            <a href="{{ url_for('index') }}">Página Inicial</a></div>
         
-            <table>
-                <thead>
-                    <tr>
-                        <th>Número</th> <br>
-                        <th>Tipo</th>
-                        <th>Preço</th>
-                        <th>Capacidade</th>
-                        <th>Decrição</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for quarto in quartos %}
-                    <tr>
-                        <td>{{ quarto[1] }}</td>
-                        <td>{{ quarto[2] }}</td>
-                        <td>{{ quarto[3] }}</td>
-                        <td>{{ quarto[4] }}</td>
-                        <td>{{ quarto[5] }}</td>
-                        <td><a href="{{ url_for('excluir_quarto', id=quarto[0]) }}" onclick="return confirm('Tem certeza que deseja excluir este quarto?');">Excluir</a></td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        <form method="GET" action="{{ url_for('quartos') }}">
+            <label for="nome">Filtrar por numero do quarto:</label>
+            <input type="text" name="numero" id="numero" placeholder="Número do quarto" value="{{ request.args.get('numero', '') }}">
             
+            <label for="ordenar">Ordenar por:</label>
+            <select name="ordenar" id="ordenar">
+                <option value="asc" {% if request.args.get('ordenar') == 'asc' %}selected{% endif %}>Crescente</option>
+                <option value="desc" {% if request.args.get('ordenar') == 'desc' %}selected{% endif %}>Decrescente</option>
+            </select>
+            
+            <button type="submit">Filtrar</button>
+             <br>
+    </div>
+    <div>
+        <br>
         
-        </body>
-        </html>
+        <a href="{{ url_for('add_quartos')}} ">Adicionar quarto</a>
+    </div>
+
+    <table>
         <thead>
             <tr>
-                <th>Total de reservas</th>
-                <th>Número do quarto</th>
+                <th>Número</th> <br>
+                <th>Tipo</th>
+                <th>Preço</th>
+                <th>Capacidade</th>
+                <th>Decrição</th>
+                <th>Ações</th>
             </tr>
         </thead>
         <tbody>
-            {% for total in totais %}
-            <tr> <br>
-                <td>{{ total[1] }}</td> 
-                <td>{{ total[0] }}</td>
+            {% for quarto in quartos %}
+            <tr>
+                <td>{{ quarto[1] }}</td>
+                <td>{{ quarto[2] }}</td>
+                <td>{{ quarto[3] }}</td>
+                <td>{{ quarto[4] }}</td>
+                <td>{{ quarto[5] }}</td>
+                <td><a href="{{ url_for('excluir_quarto', id=quarto[0]) }}" onclick="return confirm('Tem certeza que deseja excluir este quarto?');">Excluir</a></td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
+    
+
 </body>
 </html>

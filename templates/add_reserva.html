@@ -21,20 +21,19 @@
             {% for hospede in hospedes %}
             <option value="{{ hospede[0] }}">{{ hospede[1] }}</option>
             {% endfor %}
-        </select><br><br>
-    
+        </select>
         <label for="quarto_id">Quarto:</label>
         <select name="quarto_id" id="quarto_id" required>
             {% for quarto in quartos %}
             <option value="{{ quarto[0] }}">{{ quarto[1] }}</option>
             {% endfor %}
-        </select><br><br>
+        </select>
     
         <label for="checkin">Data de Check-In:</label>
-        <input type="date" name="checkin" id="checkin" required><br><br>
+        <input type="date" name="checkin" id="checkin" required>
     
         <label for="checkout">Data de Check-Out:</label>
-        <input type="date" name="checkout" id="checkout" required><br><br>
+        <input type="date" name="checkout" id="checkout" required>
     
         <button type="submit">Salvar</button>
     </form>
