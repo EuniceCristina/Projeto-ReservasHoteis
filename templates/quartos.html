@@ -7,6 +7,12 @@
     <link rel="stylesheet" href="static/quartos.css">
 </head>
 <body>
+    <div class="menu">
+        <a href="{{ url_for('hospedes') }}">Hóspedes</a>
+        <a href="{{ url_for('quartos') }}">Hospedagens</a>
+        <a href="{{ url_for('reservas') }}">Reservas</a>
+
+    </div>
     <div class="container">
         <div class="head"><h1>Gerenciamento de Quartos</h1>
             <a href="{{ url_for('index') }}">Página Inicial</a></div>

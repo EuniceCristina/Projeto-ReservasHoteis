@@ -6,6 +6,12 @@
     <title>Gerenciamento de Hóspedes</title>
     <link rel="stylesheet" href="static/hospede.css">
 <body>
+    <div class="menu">
+        <a href="{{ url_for('hospedes') }}">Hóspedes</a>
+        <a href="{{ url_for('quartos') }}">Hospedagens</a>
+        <a href="{{ url_for('reservas') }}">Reservas</a>
+
+    </div>
     <div class="container">
         <div class="head">
             <h1>Gerenciamento de Hóspedes</h1>
