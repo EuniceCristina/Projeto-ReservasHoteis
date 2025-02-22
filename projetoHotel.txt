@@ -1,0 +1,19 @@
+Página de login/registro ->
+Se for um usuario:
+	-> acessar página dos quartos disponiveis 
+	-> possibilidade de escolher quarto e pedir reserva
+
+	-> Ver status da reserva, se foi aceita ou não, valor(1)
+se for adimistrador:
+	-> Acessa página incial do nosso site, com acesso a lista de hospedes, quartos e reservas
+	-> nas reservas, opção de aceitar ou negar solicitações de reservas(2)(3)
+	-> Acesso a relatorios(4)
+
+Tarefas Adicionais
+1. Criar uma função calcular_valor_reserva(id_reserva).
+2. Criar um procedimento armazenado validar_reserva(id_hospede,
+id_quarto, check_in, check_out) ). Verificar a disponibilidade, a data e se o
+usuário está apto a realizar a reserva
+3. Criar uma trigger validar_checkin para impedir reservas duplicadas.
+4. Criar uma trigger log_reservas para registrar cada inserção, edição e
+exclusão de reserva na tabela logs_reservas.

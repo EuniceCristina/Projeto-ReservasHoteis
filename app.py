@@ -1,13 +1,26 @@
 from flask import Flask, render_template, redirect, request, url_for, flash
 from flask_mysqldb import MySQL
 from datetime import datetime
+from flask_login import LoginManager, login_user, logout_user, login_required, current_user
+from werkzeug.security import generate_password_hash, check_password_hash
+from models import User, Quarto, Reserva
 
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'senhadoprojeto'
 
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = "login"
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.get(user_id)
+
+
 #configiração página inicial
-@app.route('/')
+@app.route('/index')
 def index():
     return render_template('index.html')
 
@@ -18,6 +31,11 @@ app.config['MYSQL_PASSWORD'] = ''
 app.config['MYSQL_DB'] = 'db_projetoHotel'
 
 mysql = MySQL(app)
+
+#página login
+@app.route('/', methods=['GET'])
+def login():
+    return render_template('login.html')
 
 #página de hospedes
 @app.route('/hospedes', methods=['GET'])

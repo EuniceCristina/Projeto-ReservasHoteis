@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>GrandHotel</h1>
+    <h2>Faça seu cadastro</h2>
+    <form action="{{url_for('login')}}" method="post">
+        <div class="error">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                                {% if messages %}
+                                    <div class="alert alert-dismissible fade show">
+                                        {% for category, message in messages %}
+                                            <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }}">
+                                                {{ message }}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                {% endwith %}
+        </div>
+        <label for="nome">Nome:</label>
+        <input type="text" name="nome" id="nome">
+        <label for="cpf">Cpf:</label>
+        <input type="number" name="cpf" id="cpf">
+        <label for="telefone">Telefone:</label>
+        <input type="number" name="telefone" id="telefone">
+        <label for="email">Email:</label>
+        <input type="email" name="email" id="email">
+        <label for="senha">Senha:</label>
+        <input type="password" name="senha" id="senha" required>
+        <select name="usuario" id="usuario">
+            <option value="usuario">Usuário</option>
+            <option value="administrador">Administrador</option>
+        </select>
+        <button>Enviar</button>
+    </form>
+</body>
+</html>
