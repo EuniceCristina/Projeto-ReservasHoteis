@@ -3,8 +3,7 @@ from flask_mysqldb import MySQL
 from datetime import datetime
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
-from models import User, Quarto, Reserva
-
+from models import User
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'senhadoprojeto'
@@ -15,8 +14,8 @@ login_manager.init_app(app)
 login_manager.login_view = "login"
 
 @login_manager.user_loader
-def load_user(user_id):
-    return User.get(user_id)
+def load_user(usuario_id):
+    return User.get(usuario_id)
 
 
 #configiração página inicial
@@ -33,12 +32,63 @@ app.config['MYSQL_DB'] = 'db_projetoHotel'
 mysql = MySQL(app)
 
 #página login
-@app.route('/', methods=['GET'])
+@app.route("/", methods=['GET', 'POST'])
 def login():
+    if request.method == "POST":
+        email = request.form['email']
+        senha = request.form['senha']
+        
+        user = User.get_by_email(email)
+
+        if not user:
+            
+            flash("E-mail não cadastrado!", "error")
+            return render_template('login.html')
+
+        if not user.senha==senha:
+            
+            flash("Senha incorreta!", "error")
+            return render_template('login.html')
+
+        login_user(user, remember=True)
+
+        flash("Login realizado com sucesso!", "success")
+        if user.tipo == "usuario":
+            return redirect(url_for('quartos'))
+        else:
+            return redirect(url_for('index'))
+
+  
     return render_template('login.html')
+
+@app.route("/register", methods=['GET', 'POST'])
+def register():
+    if request.method == "POST":
+        email = request.form['email']
+        telefone = request.form['telefone']
+        nome = request.form['nome']
+        senha = request.form['senha']
+        tipo = request.form['usuario']
+        
+
+        existing_user = User.get_by_email(email)
+        if existing_user:
+            flash("E-mail já está em uso!", "error")
+            return render_template('registro.html')
+
+
+        
+
+        User.create(nome=nome, email=email, telefone=telefone, senha=senha,tipo=tipo)
+
+        
+        flash("Cadastro realizado com sucesso! Faça login.", "success")
+        return redirect(url_for('login'))
+    return render_template('registro.html')
 
 #página de hospedes
 @app.route('/hospedes', methods=['GET'])
+@login_required
 def hospedes():
     nome_filtro = request.args.get('nome', '')  
     ordem = request.args.get('ordenar', 'asc')  
@@ -58,10 +108,22 @@ def hospedes():
     hospedes = cur.fetchall()  
     cur.close()
 
-    return render_template('hospedes.html', hospedes=hospedes)
+    user = current_user
+
+
+    if not user:
+        flash("Usuário não encontrado.", "error")
+        return redirect(url_for("login"))
+
+    if user.tipo == 'usuario':
+        return render_template('quartos.html')
+    else:
+
+        return render_template('hospedes.html', hospedes=hospedes)
 
 #página para adicionar hóspedes
 @app.route('/add_hospede', methods=['GET', 'POST'])
+@login_required
 def add_hospede():
     if request.method == 'POST':
         nome = request.form['nome']
@@ -90,10 +152,21 @@ def add_hospede():
         flash ('Hóspede adicionado com sucesso!', 'success')
         return redirect(url_for('hospedes'))  
 
-    return render_template('add_hospedes.html')  
+    user = current_user
+
+
+    if not user:
+        flash("Usuário não encontrado.", "error")
+        return redirect(url_for("login"))
+
+    if user.tipo == 'usuario':
+        return render_template('quartos.html')
+    else:
+        return render_template('add_hospedes.html')   
 
 #página para editar hóspedes
 @app.route('/edit_hospede/<int:id>', methods=['GET', 'POST'])
+@login_required
 def edit_hospede(id):
     cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM hospede WHERE id = %s", (id,))
@@ -115,11 +188,21 @@ def edit_hospede(id):
 
         flash('Dados do hóspede atualizados com sucesso!', 'success')
         return redirect(url_for('hospedes'))
+    user = current_user
 
-    return render_template('edit_hospede.html', hospede=hospede)
+
+    if not user:
+        flash("Usuário não encontrado.", "error")
+        return redirect(url_for("login"))
+
+    if user.tipo == 'usuario':
+        return render_template('quartos.html')
+    else:
+        return render_template('edit_hospede.html', hospede=hospede)
 
 #página para excluir hóspedes
 @app.route('/excluir_hospede/<int:id>', methods=['GET', 'POST'])
+@login_required
 def excluir_hospede(id):
     cur = mysql.connection.cursor()
     cur.execute("DELETE FROM hospede WHERE id = %s", (id,))
@@ -132,6 +215,7 @@ def excluir_hospede(id):
 
 #página dos quartos
 @app.route('/quartos', methods=['GET','POST'])
+@login_required
 def quartos():
     numero_filtro = request.args.get('numero', '')  
     ordem = request.args.get('ordenar', 'asc')  
@@ -154,6 +238,7 @@ def quartos():
 
 #página pada adicionar novos quartos
 @app.route('/add_quartos', methods=['GET','POST'])
+@login_required
 def add_quartos():
     if request.method == 'POST':
         numero = request.form['numero']
@@ -174,10 +259,21 @@ def add_quartos():
         mysql.connection.commit()
         cursor.close()
         return redirect(url_for('quartos'))
-    return render_template('add_quartos.html')
+    user = current_user
+
+
+    if not user:
+        flash("Usuário não encontrado.", "error")
+        return redirect(url_for("login"))
+
+    if user.tipo == 'usuario':
+        return render_template('quartos.html')
+    else:
+        return render_template('add_quartos.html')
 
 #página para excluir quartos
 @app.route('/excluir_quarto/<int:id>', methods=['GET', 'POST'])
+@login_required
 def excluir_quarto(id):
     cur = mysql.connection.cursor()
     cur.execute("DELETE FROM quarto WHERE id = %s", (id,))
@@ -186,6 +282,7 @@ def excluir_quarto(id):
 
     flash('Hóspede excluído com sucesso!')
     return redirect(url_for('quartos'))
+    #PAREI AQUI, IF USUARIO NÃO PODE EXCLUIR
 
 #página de reservas
 @app.route('/reservas', methods=['GET', 'POST'])
@@ -379,3 +476,9 @@ def nao_reservados():
     return render_template('nao_reservados.html',totais=totais)
 
 
+@app.route('/logout')
+@login_required
+def logout():
+    
+    logout_user()
+    return redirect(url_for('login'))

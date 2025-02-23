@@ -46,7 +46,13 @@ body {
     transform: scale(1.1);
 }
 
-
+.menu button{
+    background-color: #0056b3;
+    color: var(--cor-texto);
+    text-decoration: none;
+    font-size: 1.2rem;
+    border: none;
+}
 h1 {
     font-size: 2rem;
     color: var(--cor-primaria);

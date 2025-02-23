@@ -8,7 +8,7 @@
 <body>
     <h1>GrandHotel</h1>
     <h2>Faça seu cadastro</h2>
-    <form action="{{url_for('login')}}" method="post">
+    <form action="{{url_for('register')}}" method="post">
         <div class="error">
             {% with messages = get_flashed_messages(with_categories=true) %}
                                 {% if messages %}
@@ -24,14 +24,19 @@
         </div>
         <label for="nome">Nome:</label>
         <input type="text" name="nome" id="nome">
+
         <label for="cpf">Cpf:</label>
         <input type="number" name="cpf" id="cpf">
+
         <label for="telefone">Telefone:</label>
         <input type="number" name="telefone" id="telefone">
+
         <label for="email">Email:</label>
         <input type="email" name="email" id="email">
+
         <label for="senha">Senha:</label>
         <input type="password" name="senha" id="senha" required>
+        
         <select name="usuario" id="usuario">
             <option value="usuario">Usuário</option>
             <option value="administrador">Administrador</option>
