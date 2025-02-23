@@ -116,9 +116,10 @@ def hospedes():
         return redirect(url_for("login"))
 
     if user.tipo == 'usuario':
+        flash('Você não permissão para entrar')
         return render_template('quartos.html')
     else:
-
+        
         return render_template('hospedes.html', hospedes=hospedes)
 
 #página para adicionar hóspedes
@@ -160,6 +161,7 @@ def add_hospede():
         return redirect(url_for("login"))
 
     if user.tipo == 'usuario':
+        flash('Você não permissão para adicionar')
         return render_template('quartos.html')
     else:
         return render_template('add_hospedes.html')   
@@ -196,6 +198,7 @@ def edit_hospede(id):
         return redirect(url_for("login"))
 
     if user.tipo == 'usuario':
+        flash('Você não permissão para editar')
         return render_template('quartos.html')
     else:
         return render_template('edit_hospede.html', hospede=hospede)
@@ -275,14 +278,19 @@ def add_quartos():
 @app.route('/excluir_quarto/<int:id>', methods=['GET', 'POST'])
 @login_required
 def excluir_quarto(id):
-    cur = mysql.connection.cursor()
-    cur.execute("DELETE FROM quarto WHERE id = %s", (id,))
-    mysql.connection.commit()
-    cur.close()
+    user = current_user
+    if user.tipo == 'administrador':
 
-    flash('Hóspede excluído com sucesso!')
-    return redirect(url_for('quartos'))
-    #PAREI AQUI, IF USUARIO NÃO PODE EXCLUIR
+        cur = mysql.connection.cursor()
+        cur.execute("DELETE FROM quarto WHERE id = %s", (id,))
+        mysql.connection.commit()
+        cur.close()
+        flash('Hóspede excluído com sucesso!')
+        return redirect(url_for('quartos'))
+    else:
+        flash('Você não ter permissão para excluir esse quarto')
+        return redirect(url_for('quartos'))
+    
 
 #página de reservas
 @app.route('/reservas', methods=['GET', 'POST'])
@@ -321,8 +329,13 @@ def reservas():
         checkin = reserva[3].strftime('%d/%m/%Y')  
         checkout = reserva[4].strftime('%d/%m/%Y')  
         reservas_formatadas.append(reserva[:3] + (checkin, checkout, reserva[5]))
+    user = current_user
+    if user.tipo == 'administrador':
 
-    return render_template('reservas.html', reservas=reservas_formatadas, checkin_filter=checkin_filter, ordem=ordem)
+        return render_template('reservas.html', reservas=reservas_formatadas, checkin_filter=checkin_filter, ordem=ordem)
+    else:
+        flash('Você não ter permissão para acessar entrar')
+        return redirect(url_for('quartos'))
 
 
 #página para adicionar reservas

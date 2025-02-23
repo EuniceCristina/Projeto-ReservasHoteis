@@ -48,6 +48,19 @@
                 <th>Ações</th>
             </tr>
         </thead>
+        <div class="error">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                                {% if messages %}
+                                    <div class="alert alert-dismissible fade show">
+                                        {% for category, message in messages %}
+                                            <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }}">
+                                                {{ message }}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                {% endwith %}
+        </div>
         <tbody>
             {% for quarto in quartos %}
             <tr>
