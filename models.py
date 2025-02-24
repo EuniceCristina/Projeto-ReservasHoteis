@@ -6,19 +6,20 @@ from flask_mysqldb import MySQL
 
 
 class User(UserMixin):
-    def __init__(self, id, nome, email, telefone, senha, tipo):
+    def __init__(self, id, nome, email, telefone, senha, tipo, cpf):
         self.id = id
         self.nome = nome
         self.email = email
         self.telefone = telefone
         self.senha = senha
         self.tipo = tipo
+        self.cpf = cpf
 
     @staticmethod
     def get(user_id):
         from app import mysql
         cur = mysql.connection.cursor()
-        cur.execute("SELECT nome,cpf,telefone,email,senha,tipo FROM hospede WHERE id = %s", (user_id,))
+        cur.execute("SELECT id, nome, email, telefone, senha, tipo, cpf FROM hospede WHERE id = %s", (user_id,))
         result = cur.fetchone()
         cur.close()
         
@@ -30,23 +31,34 @@ class User(UserMixin):
     def get_by_email(email):
         from app import mysql
         cur = mysql.connection.cursor()
-        cur.execute("SELECT id, nome, email, telefone, senha, tipo FROM hospede WHERE email = %s", (email,))
+        cur.execute("SELECT id, nome, cpf, email, telefone, senha, tipo FROM hospede WHERE email = %s", (email,))
+        result = cur.fetchone()
+        cur.close()
+        if result:
+            return User(*result) 
+        return None
+    @staticmethod
+    def get_by_cpf(cpf):
+        from app import mysql
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT id, nome, cpf, email, telefone, senha, tipo FROM hospede WHERE cpf = %s", (cpf,))
         result = cur.fetchone()
         cur.close()
         if result:
             return User(*result) 
         return None
 
+
         
         
 
     @staticmethod
-    def create(nome, email, telefone, senha, tipo):
+    def create(nome, email, telefone, senha, tipo, cpf):
         from app import mysql
         cur = mysql.connection.cursor()
         cur.execute(
-            "INSERT INTO hospede (nome, email, telefone, senha, tipo) VALUES (%s, %s, %s, %s, %s)",
-            (nome, email, telefone, senha, tipo)
+            "INSERT INTO hospede (nome, email, cpf, telefone, senha, tipo) VALUES (%s, %s, %s, %s, %s, %s)",
+            (nome, email, cpf, telefone, senha, tipo)
         )
         mysql.connection.commit()
         cur.close()

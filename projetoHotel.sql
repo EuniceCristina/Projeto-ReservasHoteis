@@ -34,13 +34,5 @@ FOREIGN KEY (hos_id) REFERENCES hospede(id),
 FOREIGN KEY (quarto_id) REFERENCES quarto(id)
 );
 
-create table reserva_quarto (
-	id int not null primary key auto_increment,
-    res_id int not null,
-    qua_id int not null,
-    dataRes date not null,
-    status varchar(20) not null,
-    foreign key (res_id) references reserva(id),
-    foreign key (qua_id) references quarto(id)
-);
+
 

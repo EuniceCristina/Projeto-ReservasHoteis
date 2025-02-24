@@ -197,7 +197,7 @@
         <button type="submit">Filtrar</button>
     </form>
 
-    <a href="{{url_for('add_reserva')}}">Adicionar reserva</a>
+    <a href="{{url_for('add_reserva',id=0)}}">Adicionar reserva</a>
     <a href="{{url_for('relatorios')}}">Relatórios avançados</a>
     
     </div>
@@ -215,6 +215,7 @@
                 <th>Check-In</th>
                 <th>Check-Out</th>
                 <th>Valor Total</th>
+                <th>Situação</th>
             </tr>
         </thead>
         <tbody>
@@ -227,6 +228,7 @@
                         <td>{{ reserva[3] }}</td>
                         <td>{{ reserva[4] }}</td>
                         <td>{{ reserva[5] }}</td>
+                        <td>{{ reserva[6] }}</td>
                     </tr>
                 {% endfor %}
             {% else %}

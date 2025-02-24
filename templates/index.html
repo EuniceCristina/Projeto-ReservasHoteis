@@ -14,9 +14,12 @@
     </div>
 
     <div class="menu">
-        <a href="{{ url_for('hospedes') }}">Hóspedes</a>
-        <a href="{{ url_for('quartos') }}">Hospedagens</a>
-        <a href="{{ url_for('reservas') }}">Reservas</a>
+        {%if barra%}
+            <a href="{{ url_for('hospedes') }}">Hóspedes</a>
+            <a href="{{ url_for('reservas') }}">Reservas</a>
+        {%endif%}
+            <a href="{{ url_for('quartos') }}">Ver hospedagens</a>
+            <a href="/logout">Sair</a>
 
     </div>
     <div class="imagem">

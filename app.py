@@ -21,7 +21,12 @@ def load_user(usuario_id):
 #configiração página inicial
 @app.route('/index')
 def index():
-    return render_template('index.html')
+    user = current_user
+    if user.tipo == 'administrador':
+        barra = True
+        return render_template('index.html', barra=barra)
+    else: 
+        return render_template('index.html')
 
 #configuração do banco
 app.config['MYSQL_HOST'] = 'localhost'
@@ -53,7 +58,7 @@ def login():
         login_user(user, remember=True)
 
         flash("Login realizado com sucesso!", "success")
-        if user.tipo == "usuario":
+        if user.tipo == 'usuario':
             return redirect(url_for('quartos'))
         else:
             return redirect(url_for('index'))
@@ -69,17 +74,23 @@ def register():
         nome = request.form['nome']
         senha = request.form['senha']
         tipo = request.form['usuario']
+        cpf = request.form['cpf']
         
 
-        existing_user = User.get_by_email(email)
-        if existing_user:
+        existing_user_email = User.get_by_email(email)
+        existing_user_cpf = User.get_by_cpf(cpf)
+        if existing_user_email:
             flash("E-mail já está em uso!", "error")
             return render_template('registro.html')
+        elif existing_user_cpf:
+            flash("Cpf já está em uso!", "error")
+            return render_template('registro.html')
+        
 
 
         
 
-        User.create(nome=nome, email=email, telefone=telefone, senha=senha,tipo=tipo)
+        User.create(nome=nome, email=email, telefone=telefone, senha=senha,tipo=tipo,cpf=cpf)
 
         
         flash("Cadastro realizado com sucesso! Faça login.", "success")
@@ -119,7 +130,7 @@ def hospedes():
         flash('Você não permissão para entrar')
         return render_template('quartos.html')
     else:
-        
+        barra = True
         return render_template('hospedes.html', hospedes=hospedes)
 
 #página para adicionar hóspedes
@@ -161,7 +172,7 @@ def add_hospede():
         return redirect(url_for("login"))
 
     if user.tipo == 'usuario':
-        flash('Você não permissão para adicionar')
+        flash('Você não permissão para adicionar', 'error')
         return render_template('quartos.html')
     else:
         return render_template('add_hospedes.html')   
@@ -207,13 +218,18 @@ def edit_hospede(id):
 @app.route('/excluir_hospede/<int:id>', methods=['GET', 'POST'])
 @login_required
 def excluir_hospede(id):
-    cur = mysql.connection.cursor()
-    cur.execute("DELETE FROM hospede WHERE id = %s", (id,))
-    mysql.connection.commit()
-    cur.close()
+    user = current_user
+    if user.tipo == 'usuario':
+        flash('Você não permissão para excluir','error')
+        return render_template('quartos.html')
+    else:
+        cur = mysql.connection.cursor()
+        cur.execute("DELETE FROM hospede WHERE id = %s", (id,))
+        mysql.connection.commit()
+        cur.close()
 
-    flash('Hóspede excluído com sucesso!')
-    return redirect(url_for('hospedes'))
+        flash('Hóspede excluído com sucesso!')
+        return redirect(url_for('hospedes'))
 
 
 #página dos quartos
@@ -237,7 +253,12 @@ def quartos():
 
     quartos = cursor.fetchall()
     cursor.close()
-    return render_template('quartos.html', quartos=quartos)
+    user = current_user
+    if user.tipo == 'administrador':
+        barra = True
+        return render_template('quartos.html', quartos=quartos, barra=barra)
+    else: 
+        return render_template('quartos.html', quartos=quartos, id=current_user.id)
 
 #página pada adicionar novos quartos
 @app.route('/add_quartos', methods=['GET','POST'])
@@ -290,6 +311,22 @@ def excluir_quarto(id):
     else:
         flash('Você não ter permissão para excluir esse quarto')
         return redirect(url_for('quartos'))
+
+@app.route('/pedir_quarto/<int:id>', methods=['GET', 'POST'])
+@login_required
+def pedir_quarto(id):
+    user = current_user
+    if user.tipo == 'administrador':
+
+        cur = mysql.connection.cursor()
+        cur.execute("DELETE FROM quarto WHERE id = %s", (id,))
+        mysql.connection.commit()
+        cur.close()
+        flash('Hóspede excluído com sucesso!')
+        return redirect(url_for('quartos'))
+    else:
+        flash('Você não ter permissão para pedir esse quarto')
+        return redirect(url_for('quartos'))
     
 
 #página de reservas
@@ -302,7 +339,7 @@ def reservas():
     
     query = """
         SELECT r.id, h.nome AS hospede, q.numero AS quarto, checkin, 
-        checkout, total 
+        checkout, total , situacao
         FROM reserva r
         JOIN hospede h ON r.hos_id = h.id
         JOIN quarto q ON r.quarto_id = q.id
@@ -332,20 +369,26 @@ def reservas():
     user = current_user
     if user.tipo == 'administrador':
 
-        return render_template('reservas.html', reservas=reservas_formatadas, checkin_filter=checkin_filter, ordem=ordem)
+        return render_template('reservas.html', reservas=reservas, checkin_filter=checkin_filter, ordem=ordem)
     else:
-        flash('Você não ter permissão para acessar entrar')
         return redirect(url_for('quartos'))
 
 
 #página para adicionar reservas
-@app.route('/add_reserva', methods=['GET', 'POST'])
-def add_reserva():
+@app.route('/add_reserva/<int:id>', methods=['GET', 'POST'])
+def add_reserva(id):
     if request.method == 'POST':
-        hos_id = request.form['hos_id']
+        if id==0:
+            situacao = "Confirmada"
+            hos_id = request.form['hos_id']
+        else:
+            flash('Pedido realizado com sucesso','success')
+            situacao = "Pendente"
+            hos_id = current_user.id
         quarto_id = request.form['quarto_id']
         checkin = request.form['checkin']
         checkout = request.form['checkout']
+        
 
         cur = mysql.connection.cursor()
 
@@ -381,14 +424,14 @@ def add_reserva():
         if not preco_quarto:
             flash('Quarto inválido selecionado. Tente novamente.', 'error')
             cur.close()
-            return redirect(url_for('add_reserva'))
+            return redirect(url_for('add_reserva',id=id))
 
         total = preco_quarto[0] * dias
 
         cur.execute("""
-            INSERT INTO reserva (hos_id, quarto_id, checkin, checkout, total) 
-            VALUES (%s, %s, %s, %s, %s)
-        """, (hos_id, quarto_id, checkin, checkout, total))
+            INSERT INTO reserva (hos_id, quarto_id, checkin, checkout, total, situacao) 
+            VALUES (%s, %s, %s, %s, %s, %s)
+        """, (hos_id, quarto_id, checkin, checkout, total, situacao))
         mysql.connection.commit()
         cur.close()
 
@@ -426,8 +469,12 @@ def relatorios():
     cur.execute('SELECT id,nome FROM hospede')
     hospedes = cur.fetchall()
     cur.close()
-
-    return render_template('relatorios.html', hospedes=hospedes)
+    user = current_user
+    if user.tipo == 'usuario':
+            flash('Voce não permissão para acessar relatórios','error')
+            return redirect(url_for('quartos'))
+    else: 
+        return render_template('relatorios.html', hospedes=hospedes)
 
 #página para relátorio total de reservas
 @app.route('/total_reservas', methods=['GET','POST'])
@@ -441,7 +488,12 @@ def total_reservas():
         cur.close()
         
         return render_template('total_reservas.html',totais=totais) 
-    return render_template('total_reservas.html')
+    user = current_user
+    if user.tipo == 'usuario':
+            flash('Voce não permissão para acessar relatórios','error')
+            return redirect(url_for('quartos'))
+    else: 
+        return render_template('total_reservas.html')
 
 #página para relátorio de reservas acima de 2000,00
 @app.route('/reservas_acima', methods=['GET','POST'])
@@ -450,7 +502,12 @@ def reservas_acima():
     cur.execute("SELECT nome, total FROM hospede as h JOIN reserva as r ON h.id = r.hos_id WHERE total>='2000' ")
     totais = cur.fetchall()
     cur.close()
-    return render_template('reservas_acima.html',totais=totais)
+    user = current_user
+    if user.tipo == 'usuario':
+            flash('Voce não permissão para acessar relatórios','error')
+            return redirect(url_for('quartos'))
+    else: 
+        return render_template('reservas_acima.html',totais=totais)
 
 #página para relátorio de quartos mais reservados
 @app.route('/quartos_reservados', methods=['GET','POST'])
@@ -470,7 +527,12 @@ def quartos_reservados():
         cur.execute(query, (dias,))
         totais = cur.fetchall()
         cur.close()
-        return render_template('quartos_reservados.html',totais=totais, dias=dias)
+        user = current_user
+        if user.tipo == 'usuario':
+            flash('Voce não permissão para acessar relatórios','error')
+            return redirect(url_for('quartos'))
+        else: 
+            return render_template('quartos_reservados.html',totais=totais, dias=dias)
 
 #página para relátorio de quartos não reservados
 @app.route('/nao_reservados', methods=['GET','POST'])
@@ -486,7 +548,12 @@ def nao_reservados():
     cur.close()
     if request.method=='POST':
         return render_template('nao_reservados.html',totais=totais)
-    return render_template('nao_reservados.html',totais=totais)
+    user = current_user
+    if user.tipo == 'usuario':
+            flash('Voce não permissão para acessar relatórios','error')
+            return redirect(url_for('quartos'))
+    else: 
+        return render_template('nao_reservados.html',totais=totais)
 
 
 @app.route('/logout')
