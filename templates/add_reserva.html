@@ -14,7 +14,7 @@
             </div>
             <p style="color: red;">{{flash}}</p>
     
-    <form method="POST" action="{{ url_for('add_reserva',id=0) }}">
+    <form method="POST" action="{{ url_for('add_reserva',id=id) }}">
         <br>
         <label for="hospede_id">Hóspede:</label>
         <select name="hos_id" id="hospede_id" required>

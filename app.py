@@ -330,6 +330,7 @@ def pedir_quarto(id):
     
 
 #página de reservas
+
 @app.route('/reservas', methods=['GET', 'POST'])
 def reservas():
     checkin_filter = request.form.get('checkin_filter')  
@@ -368,11 +369,31 @@ def reservas():
         reservas_formatadas.append(reserva[:3] + (checkin, checkout, reserva[5]))
     user = current_user
     if user.tipo == 'administrador':
-
-        return render_template('reservas.html', reservas=reservas, checkin_filter=checkin_filter, ordem=ordem)
+        barra = True
+        return render_template('reservas.html', reservas=reservas, checkin_filter=checkin_filter, ordem=ordem,barra=barra)
     else:
         return redirect(url_for('quartos'))
+    
+@app.route('/hos_reservas', methods=['GET', 'POST'])
+def hos_reservas():
+    checkin_filter = request.form.get('checkin_filter')  
+    ordem = request.form.get('ordem', 'asc')  
 
+    cur = mysql.connection.cursor()
+    user_id = current_user.id
+    cur.execute("""
+ SELECT r.id, q.numero AS quarto, checkin, 
+        checkout, total , situacao
+        FROM reserva r
+        JOIN quarto q ON r.quarto_id = q.id
+        WHERE r.hos_id = %s
+    """,(user_id,))
+    reservas = cur.fetchall()
+    cur.close()
+    user_nome = current_user.nome
+    
+    return render_template('hos_reserva.html', reservas=reservas, checkin_filter=checkin_filter, ordem=ordem,user_nome=user_nome)
+    
 
 #página para adicionar reservas
 @app.route('/add_reserva/<int:id>', methods=['GET', 'POST'])
@@ -382,6 +403,7 @@ def add_reserva(id):
             situacao = "Confirmada"
             hos_id = request.form['hos_id']
         else:
+            print(id)
             flash('Pedido realizado com sucesso','success')
             situacao = "Pendente"
             hos_id = current_user.id
@@ -445,7 +467,7 @@ def add_reserva(id):
     quartos = cur.fetchall()
     cur.close()
 
-    return render_template('add_reserva.html', hospedes=hospedes, quartos=quartos)
+    return render_template('add_reserva.html', hospedes=hospedes, quartos=quartos,id=id)
 
 
 #página para excluir reservas
@@ -494,6 +516,16 @@ def total_reservas():
             return redirect(url_for('quartos'))
     else: 
         return render_template('total_reservas.html')
+    
+@app.route('/confirmar_reserva/<int:id>',methods=['POST'])
+def confirmar_reserva(id):
+    cur = mysql.connection.cursor()
+
+    cur.execute("UPDATE reserva SET situacao = 'Confirmada' WHERE id=%s", (id,))
+    mysql.connection.commit()
+    cur.close()
+    return redirect(url_for('reservas'))
+
 
 #página para relátorio de reservas acima de 2000,00
 @app.route('/reservas_acima', methods=['GET','POST'])

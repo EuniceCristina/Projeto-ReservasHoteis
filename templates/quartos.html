@@ -13,6 +13,8 @@
             {%if barra%}
             <a href="{{ url_for('hospedes') }}">Hóspedes</a>
             <a href="{{ url_for('reservas') }}">Reservas</a>
+            {%else%}
+            <a href="{{ url_for('hos_reservas') }}">Minhas reservas</a>
             {%endif%}
             <a href="{{ url_for('quartos') }}">Hospedagens</a>
             <a href="/logout">Sair</a>

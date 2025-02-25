@@ -185,37 +185,19 @@
 </head>
 <body>
     <div class="menu">
-        <a href="{{ url_for('hospedes') }}">Hóspedes</a>
         <a href="{{ url_for('quartos') }}">Hospedagens</a>
-        <a href="{{ url_for('hos_reservas') }}">Reservas</a>
+        <a href="{{ url_for('hos_reservas') }}">Minhas reservas</a>
         <a href="/logout">Sair</a>
 
     </div>
     <div>
         <div class="head">
-            <h1>Lista de Reservas</h1>
+            <h1>Lista pessoal de {{user_nome}}</h1>
     <a href="{{ url_for('index') }}">Página Inicial</a>
         </div>
     
 
-    <form method="POST" action="{{ url_for('reservas') }}">
-        <label for="checkin_filter">Filtrar por Data de Check-in:</label>
-        <input type="date" id="checkin_filter" name="checkin_filter" value="{{ checkin_filter }}">
 
-        <label for="ordem">Ordenar por checkin: </label>
-        <select name="ordem" id="ordem">
-            <option value="asc" {% if ordem == 'asc' %}selected{% endif %}>Crescente</option>
-            <option value="desc" {% if ordem == 'desc' %}selected{% endif %}>Decrescente</option>
-        </select>
-
-        <button type="submit">Filtrar</button>
-    </form>
-
-    <a href="{{url_for('add_reserva',id=0)}}">Adicionar reserva</a>
-    <a href="{{url_for('relatorios')}}">Relatórios avançados</a>
-    
-    </div>
-    <br>
    
 
     <h2>Reservas Encontradas</h2>
@@ -224,7 +206,6 @@
         <thead>
             <tr>
                 <th>ID</th>
-                <th>Hóspede</th>
                 <th>Quarto</th>
                 <th>Check-In</th>
                 <th>Check-Out</th>
@@ -234,7 +215,7 @@
         </thead>
         <tbody>
             {% if reservas %}
-                {% for reserva in reservas %}
+                {% for reserva in reservas%}
                     <tr>
                         <td>{{ reserva[0] }}</td>
                         <td>{{ reserva[1] }}</td>
@@ -242,18 +223,8 @@
                         <td>{{ reserva[3] }}</td>
                         <td>{{ reserva[4] }}</td>
                         <td>{{ reserva[5] }}</td>
-                        <td>{{ reserva[6] }}</td>
-                        {% if barra %}
-                            {%if reserva[6] =='Pendente'%}
-                                <td>
-                                    <form id="confirm" action="{{url_for('confirmar_reserva', id=reserva[0])}}" method="post">
-                                        <button >Confirmar</button>
-                                    </form>
-                                </td>
-                            {%endif%}
-                        {%endif%}
+                {%endfor%}
                     </tr>
-                {% endfor %}
             {% else %}
                 <tr>
                     <td colspan="6">Nenhuma reserva encontrada com os critérios fornecidos.</td>
