@@ -29,10 +29,11 @@
         <input type="text" name="nome" id="nome">
 
         <label for="cpf">Cpf:</label>
-        <input type="number" name="cpf" id="cpf">
+        <input type="text" name="cpf" id="cpf"
+        pattern="\d{3}\.?\d{3}\.?\d{3}-?\d{2}">
 
         <label for="telefone">Telefone:</label>
-        <input type="number" name="telefone" id="telefone">
+        <input type="tel" name="telefone" id="telefone">
 
         <label for="email">Email:</label>
         <input type="email" name="email" id="email">
@@ -46,5 +47,6 @@
         </select>
         <button>Enviar</button>
     </form>
+    <p>Já tem conta? <a href="/">Faça seu login</a></p>
 </body>
 </html>

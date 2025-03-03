@@ -7,10 +7,13 @@
     <link rel="stylesheet" href="static/hospede.css">
 <body>
     <div class="menu">
-        <a href="{{ url_for('hospedes') }}">Hóspedes</a>
-        <a href="{{ url_for('quartos') }}">Hospedagens</a>
-        <a href="{{ url_for('reservas') }}">Reservas</a>
-        <a href="/logout">Sair</a>
+        <a href="/index">Início</a>
+        {%if barra%}
+            <a href="{{ url_for('hospedes') }}">Hóspedes</a>
+            <a href="{{ url_for('reservas') }}">Reservas</a>
+        {%endif%}
+            <a href="{{ url_for('quartos') }}">Quartos</a>
+            <a href="/logout">Sair</a>
 
     </div>
     

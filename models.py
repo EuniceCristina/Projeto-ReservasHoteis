@@ -31,7 +31,7 @@ class User(UserMixin):
     def get_by_email(email):
         from app import mysql
         cur = mysql.connection.cursor()
-        cur.execute("SELECT id, nome, cpf, email, telefone, senha, tipo FROM hospede WHERE email = %s", (email,))
+        cur.execute("SELECT id, nome, email, telefone, senha, tipo, cpf FROM hospede WHERE email = %s", (email,))
         result = cur.fetchone()
         cur.close()
         if result:

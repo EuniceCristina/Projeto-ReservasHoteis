@@ -59,7 +59,7 @@ def login():
 
         flash("Login realizado com sucesso!", "success")
         if user.tipo == 'usuario':
-            return redirect(url_for('quartos'))
+            return redirect(url_for('index'))
         else:
             return redirect(url_for('index'))
 
@@ -131,7 +131,7 @@ def hospedes():
         return render_template('quartos.html')
     else:
         barra = True
-        return render_template('hospedes.html', hospedes=hospedes)
+        return render_template('hospedes.html', hospedes=hospedes, barra=barra)
 
 #página para adicionar hóspedes
 @app.route('/add_hospede', methods=['GET', 'POST'])
@@ -403,7 +403,6 @@ def add_reserva(id):
             situacao = "Confirmada"
             hos_id = request.form['hos_id']
         else:
-            print(id)
             flash('Pedido realizado com sucesso','success')
             situacao = "Pendente"
             hos_id = current_user.id
@@ -428,7 +427,7 @@ def add_reserva(id):
         if conflito:
             flash('O quarto já está reservado para o período selecionado. Escolha outras datas ou outro quarto.', 'error')
             cur.close()
-            return redirect(url_for('add_reserva'))
+            return redirect(url_for('add_reserva',id=id))
 
         checkin_date = datetime.strptime(checkin, '%Y-%m-%d')
         checkout_date = datetime.strptime(checkout, '%Y-%m-%d')
@@ -437,7 +436,7 @@ def add_reserva(id):
         if dias <= 0:
             flash('A data de check-out deve ser posterior à data de check-in.', 'error')
             cur.close()
-            return redirect(url_for('add_reserva'))
+            return redirect(url_for('add_reserva',id=id))
 
 
         cur.execute("SELECT preco FROM quarto WHERE id = %s", (quarto_id,))
@@ -458,7 +457,10 @@ def add_reserva(id):
         cur.close()
 
         flash('Reserva adicionada com sucesso!', 'success')
-        return redirect(url_for('reservas'))
+        if id==0:
+            return redirect(url_for('reservas'))
+        else:
+            return redirect(url_for('hos_reservas'))
 
     cur = mysql.connection.cursor()
     cur.execute("SELECT id, nome FROM hospede")
