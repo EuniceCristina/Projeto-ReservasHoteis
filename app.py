@@ -396,71 +396,53 @@ def hos_reservas():
     
 
 #página para adicionar reservas
-@app.route('/add_reserva/<int:id>', methods=['GET', 'POST'])
-def add_reserva(id):
+@app.route('/add_reserva', methods=['GET', 'POST'])
+def add_reserva():
     if request.method == 'POST':
-        if id==0:
-            situacao = "Confirmada"
-            hos_id = request.form['hos_id']
-        else:
-            flash('Pedido realizado com sucesso','success')
-            situacao = "Pendente"
-            hos_id = current_user.id
+        hos_id = request.form['hos_id']
         quarto_id = request.form['quarto_id']
         checkin = request.form['checkin']
         checkout = request.form['checkout']
-        
 
         cur = mysql.connection.cursor()
 
-        cur.execute("""
-            SELECT * FROM reserva 
-            WHERE quarto_id = %s AND 
-            (
-                (checkin BETWEEN %s AND %s) OR 
-                (checkout BETWEEN %s AND %s) OR 
-                (checkin <= %s AND checkout >= %s)
-            )
-        """, (quarto_id, checkin, checkout, checkin, checkout, checkin, checkout))
-        conflito = cur.fetchone()
+        try:
+            checkin_date = datetime.strptime(checkin, '%Y-%m-%d')
+            checkout_date = datetime.strptime(checkout, '%Y-%m-%d')
+            dias = (checkout_date - checkin_date).days
 
-        if conflito:
-            flash('O quarto já está reservado para o período selecionado. Escolha outras datas ou outro quarto.', 'error')
+            if dias <= 0:
+                flash('A data de check-out deve ser posterior à data de check-in.', 'error')
+                return redirect(url_for('add_reserva'))
+
+            cur.execute("SELECT preco FROM quarto WHERE id = %s", (quarto_id,))
+            preco_quarto = cur.fetchone()
+
+            if not preco_quarto:
+                flash('Quarto inválido selecionado. Tente novamente.', 'error')
+                return redirect(url_for('add_reserva'))
+
+            total = preco_quarto[0] * dias
+
+            cur.execute("""
+                INSERT INTO reserva (hos_id, quarto_id, checkin, checkout, total) 
+                VALUES (%s, %s, %s, %s, %s)
+            """, (hos_id, quarto_id, checkin, checkout, total))
+
+            mysql.connection.commit()
+            flash('Reserva adicionada com sucesso!', 'success')
+
+        except Exception as e:
+            mysql.connection.rollback()  
+            if 'Erro: O quarto já está reservado para este período.' in str(e):
+                flash('O quarto já está reservado para este período. Escolha outra data ou outro quarto.', 'error')
+            else:
+                flash('Erro ao adicionar reserva. Tente novamente.', 'error')
+
+        finally:
             cur.close()
-            return redirect(url_for('add_reserva',id=id))
 
-        checkin_date = datetime.strptime(checkin, '%Y-%m-%d')
-        checkout_date = datetime.strptime(checkout, '%Y-%m-%d')
-        dias = (checkout_date - checkin_date).days
-
-        if dias <= 0:
-            flash('A data de check-out deve ser posterior à data de check-in.', 'error')
-            cur.close()
-            return redirect(url_for('add_reserva',id=id))
-
-
-        cur.execute("SELECT preco FROM quarto WHERE id = %s", (quarto_id,))
-        preco_quarto = cur.fetchone()
-
-        if not preco_quarto:
-            flash('Quarto inválido selecionado. Tente novamente.', 'error')
-            cur.close()
-            return redirect(url_for('add_reserva',id=id))
-
-        total = preco_quarto[0] * dias
-
-        cur.execute("""
-            INSERT INTO reserva (hos_id, quarto_id, checkin, checkout, total, situacao) 
-            VALUES (%s, %s, %s, %s, %s, %s)
-        """, (hos_id, quarto_id, checkin, checkout, total, situacao))
-        mysql.connection.commit()
-        cur.close()
-
-        flash('Reserva adicionada com sucesso!', 'success')
-        if id==0:
-            return redirect(url_for('reservas'))
-        else:
-            return redirect(url_for('hos_reservas'))
+        return redirect(url_for('reservas'))
 
     cur = mysql.connection.cursor()
     cur.execute("SELECT id, nome FROM hospede")
@@ -469,7 +451,8 @@ def add_reserva(id):
     quartos = cur.fetchall()
     cur.close()
 
-    return render_template('add_reserva.html', hospedes=hospedes, quartos=quartos,id=id)
+    return render_template('add_reserva.html', hospedes=hospedes, quartos=quartos)
+
 
 
 #página para excluir reservas
@@ -487,9 +470,6 @@ def excluir_reserva(id):
     else: 
         return redirect(url_for('reservas'))
     
-
-if __name__ == '__main__':
-    app.run(debug=True)  
 
 #página dos relátorios avançados
 @app.route('/relatorios')
@@ -610,3 +590,7 @@ def logout():
     
     logout_user()
     return redirect(url_for('login'))
+
+
+if __name__ == '__main__':
+    app.run(debug=True)  
