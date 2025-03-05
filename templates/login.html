@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-    <link rel="stylesheet" href="../static/index.css">
+    <link rel="stylesheet" href="../static/login.css">
 </head>
 <body>
     <div class="header">
@@ -12,7 +12,8 @@
         
     </div>
     <br><br>
-    <h2>Faça seu login</h2>
+    <div class="login">
+        <h2>Faça seu login</h2>
     <form action="{{url_for('login')}}" method="POST">
         <div class="error">
             {% with messages = get_flashed_messages(with_categories=true) %}
@@ -29,12 +30,17 @@
         </div>
         
         
+       
         <label for="email">Email:</label>
         <input type="email" name="email" id="email">
+        
+        
         <label for="senha">Senha:</label>
         <input type="password" name="senha" id="senha" required>
+        
         <button>Enviar</button>
     </form>
     <p>Não tem conta? <a href="/register">Registre-se</a></p>
+    </div>
 </body>
 </html>

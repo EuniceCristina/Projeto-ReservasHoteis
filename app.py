@@ -481,7 +481,12 @@ def excluir_reserva(id):
     cur.close()
 
     flash('Reserva excluída com sucesso!')
-    return redirect(url_for('reservas'))
+    user = current_user
+    if user.tipo == 'usuario':
+        return redirect(url_for('hos_reservas'))
+    else: 
+        return redirect(url_for('reservas'))
+    
 
 if __name__ == '__main__':
     app.run(debug=True)  
@@ -524,6 +529,15 @@ def confirmar_reserva(id):
     cur = mysql.connection.cursor()
 
     cur.execute("UPDATE reserva SET situacao = 'Confirmada' WHERE id=%s", (id,))
+    mysql.connection.commit()
+    cur.close()
+    return redirect(url_for('reservas'))
+
+@app.route('/negar_reserva/<int:id>',methods=['POST'])
+def negar_reserva(id):
+    cur = mysql.connection.cursor()
+
+    cur.execute("UPDATE reserva SET situacao = 'Negada' WHERE id=%s", (id,))
     mysql.connection.commit()
     cur.close()
     return redirect(url_for('reservas'))

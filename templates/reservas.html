@@ -129,14 +129,17 @@
 
             width: 90%;}
         #confirm{
+            padding: auto;
+        }
+        #confirm form{
             padding: 0;
-            width: 70px;
-            height: 40px;
+            width: 90px;
+            height: 20px;
            background-color: var(--cor-fundo); 
         }
         #confirm button{
-            width: 70px;
-            height: 40px;
+            width: 90px;
+            height: 30px;
             padding: 0;
             border: 0;
             box-shadow: 0;
@@ -246,9 +249,12 @@
                         <td>{{ reserva[6] }}</td>
                         {% if barra %}
                             {%if reserva[6] =='Pendente'%}
-                                <td>
-                                    <form id="confirm" action="{{url_for('confirmar_reserva', id=reserva[0])}}" method="post">
+                                <td id="confirm">
+                                    <form  action="{{url_for('confirmar_reserva', id=reserva[0])}}" method="post">
                                         <button >Confirmar</button>
+                                    </form>
+                                    <form  action="{{url_for('negar_reserva', id=reserva[0])}}" method="post">
+                                        <button style="background-color: red;" >Negar</button>
                                     </form>
                                 </td>
                             {%endif%}
