@@ -10,21 +10,19 @@
     <div class="container">
         <div class="head">
             <h1>Adicionar nova reserva</h1>
-            <div class="error">
-                {% with messages = get_flashed_messages(with_categories=true) %}
+            <a href="{{ url_for('reservas') }}">Voltar</a>
+            </div>
+            {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
-                    {% set last_message = messages[-1] %}
-                    <div class="alert alert-dismissible fade show">
-                        <div class="alert alert-{{ 'danger' if last_message[0] == 'error' else 'success' }}">
-                            {{ last_message[1] }}
-                        </div>
+                    <div class="flash-messages">
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
                     </div>
                 {% endif %}
             {% endwith %}
-            </div>
-            <a href="{{ url_for('reservas') }}">Voltar</a>
-            </div>
-            <p style="color: red;">{{flash}}</p>
     
     <form method="POST" action="{{ url_for('add_reserva',id=id) }}">
         <br>

@@ -63,6 +63,14 @@
                         <a href="/edit_hospede/{{ hospede[0] }}" >Editar</a>
                         <a href="{{ url_for('excluir_hospede', id=hospede[0]) }}" onclick="return confirm('Tem certeza que deseja excluir este hóspede?');">Excluir</a>
                     </td>
+                    <td>
+                        <form method="POST" action="{{ url_for('confirmar_reserva', id=reserva[0]) }}" style="display:inline;">
+                            <button type="submit" style="background-color: green; color: white;">Confirmar</button>
+                        </form>
+                        <form method="POST" action="{{ url_for('negar_reserva', id=reserva[0]) }}" style="display:inline;">
+                            <button type="submit" style="background-color: red; color: white;">Negar</button>
+                        </form>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>

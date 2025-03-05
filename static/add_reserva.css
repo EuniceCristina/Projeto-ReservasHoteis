@@ -136,3 +136,21 @@ button:hover {
         font-size: 0.9rem;
     }
 }
+
+.flash-messages {
+    width: 100%;
+    max-width: 600px;
+    margin: 10px auto;
+    padding: 10px;
+    text-align: center;
+    color: red;
+}
+
+.alert {
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+
+

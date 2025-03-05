@@ -330,17 +330,21 @@ def pedir_quarto(id):
     
 
 #página de reservas
-
 @app.route('/reservas', methods=['GET', 'POST'])
+@login_required  
 def reservas():
+    if current_user.tipo != 'administrador':
+        flash('Acesso negado. Apenas administradores podem visualizar reservas.', 'error')
+        return redirect(url_for('index')) 
+     
     checkin_filter = request.form.get('checkin_filter')  
     ordem = request.form.get('ordem', 'asc')  
 
     cur = mysql.connection.cursor()
     
     query = """
-        SELECT r.id, h.nome AS hospede, q.numero AS quarto, checkin, 
-        checkout, total , situacao
+        SELECT r.id, h.nome AS hospede, q.numero AS quarto, r.checkin, 
+        r.checkout, r.total, IFNULL(r.situacao, 'Pendente') AS situacao
         FROM reserva r
         JOIN hospede h ON r.hos_id = h.id
         JOIN quarto q ON r.quarto_id = q.id
@@ -350,13 +354,13 @@ def reservas():
     params = []
 
     if checkin_filter:
-        conditions.append("checkin = %s")
+        conditions.append("r.checkin = %s")
         params.append(checkin_filter)
 
     if conditions:
         query += " WHERE " + " AND ".join(conditions)
     
-    query += f" ORDER BY checkin {ordem}"
+    query += f" ORDER BY r.checkin {ordem}"
 
     cur.execute(query, tuple(params))
     reservas = cur.fetchall()
@@ -366,34 +370,41 @@ def reservas():
     for reserva in reservas:
         checkin = reserva[3].strftime('%d/%m/%Y')  
         checkout = reserva[4].strftime('%d/%m/%Y')  
-        reservas_formatadas.append(reserva[:3] + (checkin, checkout, reserva[5]))
-    user = current_user
-    if user.tipo == 'administrador':
-        barra = True
-        return render_template('reservas.html', reservas=reservas, checkin_filter=checkin_filter, ordem=ordem,barra=barra)
-    else:
-        return redirect(url_for('quartos'))
-    
+        situacao = reserva[6] if reserva[6] else 'Pendente'
+        reservas_formatadas.append(reserva[:3] + (checkin, checkout, reserva[5], situacao))
+
+    return render_template('reservas.html', reservas=reservas_formatadas, checkin_filter=checkin_filter, ordem=ordem, barra=True)
+
+
 @app.route('/hos_reservas', methods=['GET', 'POST'])
+@login_required  
 def hos_reservas():
-    checkin_filter = request.form.get('checkin_filter')  
-    ordem = request.form.get('ordem', 'asc')  
+    usuario_id = current_user.id  
 
     cur = mysql.connection.cursor()
-    user_id = current_user.id
-    cur.execute("""
- SELECT r.id, q.numero AS quarto, checkin, 
-        checkout, total , situacao
+    
+    query = """
+        SELECT r.id, q.numero AS quarto, r.checkin, r.checkout, r.total, 
+        IFNULL(r.situacao, 'Pendente') AS situacao
         FROM reserva r
         JOIN quarto q ON r.quarto_id = q.id
         WHERE r.hos_id = %s
-    """,(user_id,))
+        ORDER BY r.checkin DESC
+    """
+
+    cur.execute(query, (usuario_id,))
     reservas = cur.fetchall()
     cur.close()
-    user_nome = current_user.nome
-    
-    return render_template('hos_reserva.html', reservas=reservas, checkin_filter=checkin_filter, ordem=ordem,user_nome=user_nome)
-    
+
+    reservas_formatadas = []
+    for reserva in reservas:
+        checkin = reserva[2].strftime('%d/%m/%Y')  
+        checkout = reserva[3].strftime('%d/%m/%Y')  
+        situacao = reserva[5] if reserva[5] else 'Pendente'
+        reservas_formatadas.append(reserva[:2] + (checkin, checkout, reserva[4], situacao))
+
+    return render_template('hos_reserva.html', reservas=reservas_formatadas)
+
 
 #página para adicionar reservas
 @app.route('/add_reserva', methods=['GET', 'POST'])
