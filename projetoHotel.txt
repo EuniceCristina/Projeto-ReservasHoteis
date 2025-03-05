@@ -10,10 +10,14 @@ se for adimistrador:
 	-> Acesso a relatorios(4)
 
 Tarefas Adicionais
+
 1. Criar uma função calcular_valor_reserva(id_reserva).
+
 2. Criar um procedimento armazenado validar_reserva(id_hospede,
-id_quarto, check_in, check_out) ). Verificar a disponibilidade, a data e se o
+id_quarto, check_in, check_out). Verificar a disponibilidade, a data e se o
 usuário está apto a realizar a reserva
+
 3. Criar uma trigger validar_checkin para impedir reservas duplicadas.
+
 4. Criar uma trigger log_reservas para registrar cada inserção, edição e
 exclusão de reserva na tabela logs_reservas.

@@ -34,5 +34,28 @@ FOREIGN KEY (hos_id) REFERENCES hospede(id),
 FOREIGN KEY (quarto_id) REFERENCES quarto(id)
 );
 
+DELIMITER $$
+
+CREATE TRIGGER validar_checkin
+BEFORE INSERT ON reserva
+FOR EACH ROW
+BEGIN
+    DECLARE conflito INT;
+    SELECT COUNT(*) INTO conflito 
+    FROM reserva 
+    WHERE quarto_id = NEW.quarto_id
+    AND (
+        (NEW.checkin BETWEEN checkin AND checkout) OR 
+        (NEW.checkout BETWEEN checkin AND checkout) OR 
+        (NEW.checkin <= checkin AND NEW.checkout >= checkout)
+    );
+
+    IF conflito > 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Erro: O quarto já está reservado para este período.';
+    END IF;
+END $$
+
+DELIMITER ;
 
 
