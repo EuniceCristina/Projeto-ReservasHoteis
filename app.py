@@ -57,7 +57,6 @@ def login():
 
         login_user(user, remember=True)
 
-        flash("Login realizado com sucesso!", "success")
         if user.tipo == 'usuario':
             return redirect(url_for('index'))
         else:
@@ -424,7 +423,8 @@ def add_reserva():
 
             if dias <= 0:
                 flash('A data de check-out deve ser posterior à data de check-in.', 'error')
-                return redirect(url_for('add_reserva'))
+                return render_template('add_reserva.html', hospedes=hospedes, quartos=quartos)
+
 
             cur.execute("SELECT preco FROM quarto WHERE id = %s", (quarto_id,))
             preco_quarto = cur.fetchone()
@@ -441,7 +441,7 @@ def add_reserva():
             """, (hos_id, quarto_id, checkin, checkout, total))
 
             mysql.connection.commit()
-            flash('Reserva adicionada com sucesso!', 'success')
+            flash('Sucesso no seu pedido de reserva!', 'success')
 
         except Exception as e:
             mysql.connection.rollback()  
@@ -453,7 +453,10 @@ def add_reserva():
         finally:
             cur.close()
 
-        return redirect(url_for('reservas'))
+        if current_user.tipo == 'administrador':
+            return redirect(url_for('reservas'))  
+        else:
+            return redirect(url_for('quartos'))
 
     cur = mysql.connection.cursor()
     cur.execute("SELECT id, nome FROM hospede")

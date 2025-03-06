@@ -11,18 +11,7 @@
         <div class="head">
             <h1>Adicionar nova reserva</h1>
             <a href="{{ url_for('reservas') }}">Voltar</a>
-            </div>
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    <div class="flash-messages">
-                        {% for category, message in messages %}
-                            <div class="alert alert-{{ category }}">
-                                {{ message }}
-                            </div>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-            {% endwith %}
+        </div>
     
     <form method="POST" action="{{ url_for('add_reserva',id=id) }}">
         <br>
@@ -48,6 +37,7 @@
         <button type="submit">Salvar</button>
     </form>
     </div>
+
     
     
 </body>
