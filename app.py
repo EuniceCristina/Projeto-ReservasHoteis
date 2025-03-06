@@ -401,8 +401,9 @@ def hos_reservas():
         checkout = reserva[3].strftime('%d/%m/%Y')  
         situacao = reserva[5] if reserva[5] else 'Pendente'
         reservas_formatadas.append(reserva[:2] + (checkin, checkout, reserva[4], situacao))
+    user_nome = current_user.nome
 
-    return render_template('hos_reserva.html', reservas=reservas_formatadas)
+    return render_template('hos_reserva.html', reservas=reservas_formatadas,user_nome=user_nome)
 
 
 #página para adicionar reservas

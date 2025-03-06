@@ -20,7 +20,7 @@
     <div class="container">
         <div class="head">
             <h1>Gerenciamento de Hóspedes</h1>
-            <a href="{{ url_for('index') }}">Página Inicial</a>
+            
             </div>
         
 
@@ -63,10 +63,7 @@
                         <a href="/edit_hospede/{{ hospede[0] }}" >Editar</a>
                         <a href="{{ url_for('excluir_hospede', id=hospede[0]) }}" onclick="return confirm('Tem certeza que deseja excluir este hóspede?');">Excluir</a>
                     </td>
-<<<<<<< HEAD
-                    
-=======
->>>>>>> 847b192c4c7fac78822477f8e306751bdc87ccae
+
                 </tr>
                 {% endfor %}
             </tbody>
