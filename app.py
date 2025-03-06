@@ -434,15 +434,30 @@ def add_reserva():
                 flash('Quarto inválido selecionado. Tente novamente.', 'error')
                 return redirect(url_for('add_reserva'))
 
-            total = preco_quarto[0] * dias
-
             cur.execute("""
-                INSERT INTO reserva (hos_id, quarto_id, checkin, checkout, total) 
-                VALUES (%s, %s, %s, %s, %s)
-            """, (hos_id, quarto_id, checkin, checkout, total))
-
+                INSERT INTO reserva (hos_id, quarto_id, checkin, checkout)
+                VALUES (%s, %s, %s, %s)
+            """, (hos_id, quarto_id, checkin, checkout))
             mysql.connection.commit()
+
+            # Recuperar o ID da reserva recém-criada
+            reserva_id = cur.lastrowid
+
+            # Chamar a função calcular_valor_reserva no banco de dados para calcular o total
+            cur.execute("SELECT calcular_valor_reserva(%s)", (reserva_id,))
+            total = cur.fetchone()[0]  # O total retornado pela função MySQL
+
+            # Atualizar a reserva com o total calculado
+            cur.execute("""
+                UPDATE reserva
+                SET total = %s
+                WHERE id = %s
+            """, (total, reserva_id))
+            mysql.connection.commit()
+
             flash('Sucesso no seu pedido de reserva!', 'success')
+
+            
 
         except Exception as e:
             mysql.connection.rollback()  

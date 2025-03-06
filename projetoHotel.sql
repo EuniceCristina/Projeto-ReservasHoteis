@@ -58,4 +58,33 @@ END $$
 
 DELIMITER ;
 
+CREATE FUNCTION calcular_valor_reserva(id_reserva INT)  
+RETURNS FLOAT  
+DETERMINISTIC  
+BEGIN  
+    DECLARE preco_diaria FLOAT;  
+    DECLARE data_checkin DATE;  
+    DECLARE data_checkout DATE;  
+    DECLARE dias INT;  
+    DECLARE total FLOAT;  
+
+    -- Buscar os dados da reserva
+    SELECT q.preco, r.checkin, r.checkout  
+    INTO preco_diaria, data_checkin, data_checkout  
+    FROM reserva r  
+    JOIN quarto q ON r.quarto_id = q.id  
+    WHERE r.id = id_reserva;  
+
+    -- Calcular a quantidade de dias da reserva
+    SET dias = DATEDIFF(data_checkout, data_checkin);  
+
+    -- Calcular o total da reserva
+    SET total = preco_diaria * dias;  
+
+    RETURN total;  
+END $$
+
+DELIMITER ;
+
+
 
