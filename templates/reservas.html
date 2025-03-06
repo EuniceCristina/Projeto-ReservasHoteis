@@ -209,6 +209,10 @@
             color: white;
         }
 
+        table td:last-child {
+            border: none;
+        }
+
     </style>
 </head>
 <body>
@@ -248,6 +252,17 @@
     </div>
     <br>
    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+    {% endwith %}
 
     <h2>Reservas Encontradas</h2>
 
@@ -278,7 +293,7 @@
                             {%if reserva[6] =='Pendente'%}
                                 <td id="confirm">
                                     <form  action="{{url_for('confirmar_reserva', id=reserva[0])}}" method="post">
-                                        <button >Confirmar</button>
+                                        <button style="background-color: green; color: white;">Confirmar</button>
                                     </form>
                                     <form  action="{{url_for('negar_reserva', id=reserva[0])}}" method="post">
                                         <button style="background-color: red;" >Negar</button>
@@ -296,18 +311,16 @@
         </tbody>
     </table>
 
-    <br>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let alerts = document.querySelectorAll(".alert");
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    alert.style.display = "none";
+                }, 3000); 
+            });
+        });
+    </script>
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                <div class="flash-messages">
-                    {% for category, message in messages %}
-                        <div class="alert alert-{{ category }}">
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        {% endwith %}
 </body>
 </html>
