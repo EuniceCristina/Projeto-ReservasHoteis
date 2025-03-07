@@ -407,6 +407,7 @@ def hos_reservas():
 
 
 #página para adicionar reservas
+# página para adicionar reservas
 @app.route('/add_reserva', methods=['GET', 'POST'])
 def add_reserva():
     if request.method == 'POST':
@@ -418,14 +419,23 @@ def add_reserva():
         cur = mysql.connection.cursor()
 
         try:
-            checkin_date = datetime.strptime(checkin, '%Y-%m-%d')
-            checkout_date = datetime.strptime(checkout, '%Y-%m-%d')
+            checkin_date = datetime.strptime(checkin, '%Y-%m-%d').date()
+            checkout_date = datetime.strptime(checkout, '%Y-%m-%d').date()
+
+            # Chamar o procedimento armazenado validar_reserva
+            cur.callproc("validar_reserva", (hos_id, quarto_id, checkin_date, checkout_date))
+            results = list(cur.stored_results())
+            if results:
+                result = results[0].fetchall()
+                if result and result[0][0] == 'Reserva inválida':
+                    flash('Reserva inválida: ' + result[0][0], 'error')
+                    return render_template('add_reserva.html', hospedes=hospedes, quartos=quartos)
+
             dias = (checkout_date - checkin_date).days
 
             if dias <= 0:
                 flash('A data de check-out deve ser posterior à data de check-in.', 'error')
                 return render_template('add_reserva.html', hospedes=hospedes, quartos=quartos)
-
 
             cur.execute("SELECT preco FROM quarto WHERE id = %s", (quarto_id,))
             preco_quarto = cur.fetchone()
@@ -457,10 +467,8 @@ def add_reserva():
 
             flash('Sucesso no seu pedido de reserva!', 'success')
 
-            
-
         except Exception as e:
-            mysql.connection.rollback()  
+            mysql.connection.rollback()
             if 'Erro: O quarto já está reservado para este período.' in str(e):
                 flash('O quarto já está reservado para este período. Escolha outra data ou outro quarto.', 'error')
             else:
@@ -470,7 +478,7 @@ def add_reserva():
             cur.close()
 
         if current_user.tipo == 'administrador':
-            return redirect(url_for('reservas'))  
+            return redirect(url_for('reservas'))
         else:
             return redirect(url_for('quartos'))
 
@@ -482,8 +490,6 @@ def add_reserva():
     cur.close()
 
     return render_template('add_reserva.html', hospedes=hospedes, quartos=quartos)
-
-
 
 #página para excluir reservas
 @app.route('/excluir_reserva/<int:id>', methods=['GET', 'POST'])

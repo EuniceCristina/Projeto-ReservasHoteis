@@ -34,6 +34,34 @@ FOREIGN KEY (hos_id) REFERENCES hospede(id),
 FOREIGN KEY (quarto_id) REFERENCES quarto(id)
 );
 
+
+--Função calcular_valor_reserva(id_reserva)
+CREATE FUNCTION calcular_valor_reserva(id_reserva INT)  
+RETURNS FLOAT  
+DETERMINISTIC  
+BEGIN  
+    DECLARE preco_diaria FLOAT;  
+    DECLARE data_checkin DATE;  
+    DECLARE data_checkout DATE;  
+    DECLARE dias INT;  
+    DECLARE total FLOAT;  
+
+    SELECT q.preco, r.checkin, r.checkout  
+    INTO preco_diaria, data_checkin, data_checkout  
+    FROM reserva r  
+    JOIN quarto q ON r.quarto_id = q.id  
+    WHERE r.id = id_reserva;  
+
+    SET dias = DATEDIFF(data_checkout, data_checkin);  
+
+    SET total = preco_diaria * dias;  
+
+    RETURN total;  
+END $$
+
+DELIMITER ;
+
+
 DELIMITER $$
 
 CREATE TRIGGER validar_checkin
@@ -58,33 +86,39 @@ END $$
 
 DELIMITER ;
 
-CREATE FUNCTION calcular_valor_reserva(id_reserva INT)  
-RETURNS FLOAT  
-DETERMINISTIC  
-BEGIN  
-    DECLARE preco_diaria FLOAT;  
-    DECLARE data_checkin DATE;  
-    DECLARE data_checkout DATE;  
-    DECLARE dias INT;  
-    DECLARE total FLOAT;  
+CREATE TABLE logs_reservas (
+    id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    reserva_id INT,
+    acao ENUM('INSERT', 'UPDATE', 'DELETE'),
+    data TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    usuario VARCHAR(50),
+    detalhes TEXT
+);
 
-    -- Buscar os dados da reserva
-    SELECT q.preco, r.checkin, r.checkout  
-    INTO preco_diaria, data_checkin, data_checkout  
-    FROM reserva r  
-    JOIN quarto q ON r.quarto_id = q.id  
-    WHERE r.id = id_reserva;  
+DELIMITER $$
 
-    -- Calcular a quantidade de dias da reserva
-    SET dias = DATEDIFF(data_checkout, data_checkin);  
+CREATE TRIGGER log_reservas_insert
+AFTER INSERT ON reserva
+FOR EACH ROW
+BEGIN
+    INSERT INTO logs_reservas (reserva_id, acao, usuario, detalhes)
+    VALUES (NEW.id, 'INSERT', CURRENT_USER(), CONCAT('Reserva criada: Check-in ', NEW.checkin, ', Check-out ', NEW.checkout, ', Total: ', NEW.total));
+END $$
 
-    -- Calcular o total da reserva
-    SET total = preco_diaria * dias;  
+CREATE TRIGGER log_reservas_update
+AFTER UPDATE ON reserva
+FOR EACH ROW
+BEGIN
+    INSERT INTO logs_reservas (reserva_id, acao, usuario, detalhes)
+    VALUES (NEW.id, 'UPDATE', CURRENT_USER(), CONCAT('Reserva alterada: Check-in ', NEW.checkin, ', Check-out ', NEW.checkout, ', Total: ', NEW.total));
+END $$
 
-    RETURN total;  
+CREATE TRIGGER log_reservas_delete
+AFTER DELETE ON reserva
+FOR EACH ROW
+BEGIN
+    INSERT INTO logs_reservas (reserva_id, acao, usuario, detalhes)
+    VALUES (OLD.id, 'DELETE', CURRENT_USER(), CONCAT('Reserva removida: Check-in ', OLD.checkin, ', Check-out ', OLD.checkout, ', Total: ', OLD.total));
 END $$
 
 DELIMITER ;
-
-
-

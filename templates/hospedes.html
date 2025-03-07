@@ -4,16 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerenciamento de Hóspedes</title>
+    <link rel="icon" href="../static/images/logo.png">
     <link rel="stylesheet" href="static/hospede.css">
 <body>
     <div class="menu">
         <a href="/index">Início</a>
-        {%if barra%}
-            <a href="{{ url_for('hospedes') }}">Hóspedes</a>
-            <a href="{{ url_for('reservas') }}">Reservas</a>
-        {%endif%}
-            <a href="{{ url_for('quartos') }}">Quartos</a>
-            <a href="/logout">Sair</a>
+        <a href="{{ url_for('reservas') }}">Reservas</a>
+        <a href="{{ url_for('quartos') }}">Quartos</a>
+        <a href="/logout">Sair</a>
 
     </div>
     
@@ -29,15 +27,16 @@
             <input type="text" name="nome" id="nome" placeholder="Nome ou inicial do hóspede" value="{{ request.args.get('nome', '') }}">
             
         </br>
-            <label for="ordenar">Ordenar por nome:</label><br>
+            <label for="ordenar">Ordenar por nome:</label>
             <select name="ordenar" id="ordenar">
                 <option value="asc" {% if request.args.get('ordenar') == 'asc' %}selected{% endif %}>Crescente</option>
                 <option value="desc" {% if request.args.get('ordenar') == 'desc' %}selected{% endif %}>Decrescente</option>
             </select>
-            
+            <br>
             <button type="submit">Filtrar</button>
             
-        </form>
+    </div>
+     </form>
         <div><a id="adicionar" href="/add_hospede">Adicionar Hóspede</a></div>
         <table>
             

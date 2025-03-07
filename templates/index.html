@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GrandHotel</title>
+    <link rel="icon" href="../static/images/logo.png">
     <link rel="stylesheet" href="static/index.css">
 </head>
 <body>
@@ -17,6 +18,8 @@
         {%if barra%}
             <a href="{{ url_for('hospedes') }}">Hóspedes</a>
             <a href="{{ url_for('reservas') }}">Reservas</a>
+        {%else%}
+            <a href="{{ url_for('hos_reservas') }}">Perfil</a>
         {%endif%}
             <a href="{{ url_for('quartos') }}">Quartos</a>
             <a href="/logout">Sair</a>
@@ -24,9 +27,12 @@
     </div>
     <div class="imagem">
         
-        <img src="static/como-e-definida-a-classificacao-por-estrelas-dos-hoteis-1000x563-1-768x432.jpg.webp" alt="">
+        <img src="../static/images/hotel.png" alt="">
     </div>
-
+    <div style="height: 30px;"
+     class="menu">
+        <p>@GrandHotel</p>
+    </div>
    
 
 </body>

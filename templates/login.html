@@ -4,16 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
+    <link rel="icon" href="../static/images/logo.png">
     <link rel="stylesheet" href="../static/login.css">
 </head>
 <body>
     <div class="header">
         <h1>GrandHotel</h1>
-        
+        <p>Sua estadia, nossa prioridade</p>
     </div>
+    
     <br><br>
     <div class="login">
         <h2>Faça seu login</h2>
+
     <form action="{{url_for('login')}}" method="POST">
         <div class="error">
             {% with messages = get_flashed_messages(with_categories=true) %}
