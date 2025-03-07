@@ -4,6 +4,7 @@ from datetime import datetime
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from models import User
+from MySQLdb._exceptions import IntegrityError
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'senhadoprojeto'
@@ -302,11 +303,15 @@ def excluir_quarto(id):
     if user.tipo == 'administrador':
 
         cur = mysql.connection.cursor()
-        cur.execute("DELETE FROM quarto WHERE id = %s", (id,))
-        mysql.connection.commit()
-        cur.close()
-        flash('Hóspede excluído com sucesso!')
-        return redirect(url_for('quartos'))
+        try:
+            cur.execute("DELETE FROM quarto WHERE id = %s", (id,))
+            mysql.connection.commit()
+            cur.close()
+            flash('Quarto excluído com sucesso!')
+            return redirect(url_for('quartos'))
+        except IntegrityError:
+            flash('Quarto associado a reserva! Não é possivél excluir')
+            return redirect(url_for('quartos'))
     else:
         flash('Você não ter permissão para excluir esse quarto')
         return redirect(url_for('quartos'))

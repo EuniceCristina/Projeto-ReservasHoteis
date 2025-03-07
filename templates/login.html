@@ -39,11 +39,24 @@
         
         
         <label for="senha">Senha:</label>
+       <div class="viewSenha">
         <input type="password" name="senha" id="senha" required>
+        <img onclick="viewSenha()" style="cursor: pointer" src="../static/images/olho.png">
+       </div>
         
         <button>Enviar</button>
     </form>
     <p>Não tem conta? <a href="/register">Registre-se</a></p>
     </div>
 </body>
+<script>
+    function viewSenha(){
+  var tipo = document.getElementById("senha")
+  if (tipo.type == "password") {
+    tipo.type = "text";
+  }else{
+    tipo.type = "password";
+  }
+}
+</script>
 </html>
