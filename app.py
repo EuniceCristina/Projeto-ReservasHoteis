@@ -73,7 +73,7 @@ def register():
         telefone = request.form['telefone']
         nome = request.form['nome']
         senha = request.form['senha']
-        tipo = request.form['usuario']
+        tipo = 'usuario'
         cpf = request.form['cpf']
         
 

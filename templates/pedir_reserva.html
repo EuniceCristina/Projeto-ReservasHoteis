@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pedir Reserva</title>
-    <link rel="icon" href="../static/images/logo.png">
+    <link rel="icon" href="{{ url_for('static', filename='images/logo.png') }}" type="image/png">
     <style>
         :root {
     --cor-primaria: #2c3e50; ; 
@@ -153,7 +153,7 @@ button:hover {
     <div class="container">
         <div class="head">
             <h1>Pedir nova reserva</h1>
-            <a href="{{ url_for('reservas') }}">Voltar</a>
+            <a href="{{ url_for('quartos') }}">Voltar</a>
         </div>
     
     <form method="POST" action="{{ url_for('pedir_reserva',id=id,quarto_id=quarto_id) }}">

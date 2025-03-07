@@ -34,8 +34,12 @@ FOREIGN KEY (hos_id) REFERENCES hospede(id),
 FOREIGN KEY (quarto_id) REFERENCES quarto(id)
 );
 
+#Criar administrador 
+INSERT INTO hospede (nome, email, cpf, telefone, senha, tipo) VALUES ('ADMINISTRADOR','adm@gmail.com','12345678922','(84)981617026','GH2025','administrador');
+
 
 --Função calcular_valor_reserva(id_reserva)
+DELIMITER  $$
 CREATE FUNCTION calcular_valor_reserva(id_reserva INT)  
 RETURNS FLOAT  
 DETERMINISTIC  
