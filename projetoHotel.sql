@@ -62,6 +62,7 @@ END $$
 DELIMITER ;
 
 
+--Trgger validar_checkin
 DELIMITER $$
 
 CREATE TRIGGER validar_checkin
@@ -85,6 +86,8 @@ BEGIN
 END $$
 
 DELIMITER ;
+
+-- Criar Trigger para registrar cada inserção, edição e exclusão de reserva
 
 CREATE TABLE logs_reservas (
     id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -119,6 +122,44 @@ FOR EACH ROW
 BEGIN
     INSERT INTO logs_reservas (reserva_id, acao, usuario, detalhes)
     VALUES (OLD.id, 'DELETE', CURRENT_USER(), CONCAT('Reserva removida: Check-in ', OLD.checkin, ', Check-out ', OLD.checkout, ', Total: ', OLD.total));
+END $$
+
+DELIMITER ;
+
+--Procedimento armazenado validar_reserva(id_hospede, id_quarto, check_in, check_out). 
+
+CREATE PROCEDURE validar_reserva(
+    IN id_hospede INT,
+    IN id_quarto INT,
+    IN check_in DATE,
+    IN check_out DATE
+)
+BEGIN
+    DECLARE conflito INT;
+    DECLARE apto INT;
+    
+    -- Verificar disponibilidade do quarto
+    SELECT COUNT(*) INTO conflito 
+    FROM reserva 
+    WHERE quarto_id = id_quarto
+    AND (
+        (check_in BETWEEN checkin AND checkout) OR 
+        (check_out BETWEEN checkin AND checkout) OR 
+        (check_in <= checkin AND check_out >= checkout)
+    );
+    
+    IF conflito > 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Erro: O quarto já está reservado para este período.';
+    END IF;
+    
+    -- Verificar se o hóspede está apto a reservar (exemplo: status ativo)
+    SELECT COUNT(*) INTO apto FROM hospede WHERE id = id_hospede;
+    
+    IF apto = 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Erro: Hóspede não encontrado ou não apto para reserva.';
+    END IF;
 END $$
 
 DELIMITER ;
