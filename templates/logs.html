@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hóspedes com Reservas Acima de R$2000,00</title>
+    <title>Quartos mais reservados</title>
     <link rel="icon" href="../static/images/logo.png">
     <style>
+
         @import url('https://fonts.googleapis.com/css2?family=Lexend+Exa:wght@100..900&display=swap');
 
         *{
@@ -21,6 +22,7 @@
             --cor-cinza: lightgray; 
             --cor-acento: #ffd700; 
         }
+
         body {
             margin: 0;
             font-family: 'Poppins', sans-serif;
@@ -40,8 +42,15 @@
             text-align: center;
         }
 
+
+        h3 {
+            font-size: 1.5rem;
+            color: var(--cor-secundaria);
+            margin-bottom: 15px;
+        }
+
+
         a {
-            margin-top: 10px;
             display: inline-block;
             margin-bottom: 20px;
             padding: 10px 20px;
@@ -57,18 +66,23 @@
             transform: scale(1.05);
         }
 
+
         table {
             width: 100%;
-            max-width: 800px;
+            max-width: 1000px;
+            margin-top: 20px;
             border-collapse: collapse;
-            margin-top: 30px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: var(--cor-texto);
+            border-radius: 10px;
+            overflow: hidden;
         }
 
         th, td {
-            padding: 10px;
+            padding: 12px;
             text-align: left;
-            border: 1px solid #ddd;
+            border: 1px solid var(--cor-secundaria);
+            font-size: 1rem;
         }
 
         th {
@@ -76,52 +90,103 @@
             color: var(--cor-texto);
         }
 
-        tr:nth-child(even) {
-            background-color: #f4f4f4;
+        td {
+            background-color: var(--cor-fundo);
+            color: var(--cor-secundaria);
         }
 
         tr:hover {
-            background-color: #f1f1f1;
+            background-color: var(--cor-acento);
+            color: var(--cor-secundaria);
         }
         .head{
             display: flex;
+            flex-direction: column;
+            justify-content: center;
             align-items: center;
-            justify-content: space-between;
+            width: 100%;
+            margin-left: 5%;
+        }
+        .menu {
+    display: flex;
+    justify-content: center;
+    background-color: var(--cor-primaria);
+    padding: 15px 0;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    margin-bottom: 50px;
+    
+}
 
-            width: 50%;}
+.menu a {
+    color: white;
+    text-decoration: none;
+    font-size: 1.2rem;
+    margin: 0 15px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    padding: 8px 15px;
+    border-bottom: solid white;
+    background-color:var(--cor-primaria);
+    border-radius: 15px;
 
+}
+
+.menu a:hover {
+    background-color: var(--cor-cinza);
+    color: var(--cor-secundaria);
+    transform: scale(1.1);
+}
+        
         @media (max-width: 768px) {
             h1 {
                 font-size: 1.5rem;
+            }
+
+            h3 {
+                font-size: 1.2rem;
             }
 
             table {
                 font-size: 0.9rem;
             }
 
-            a {
-                margin-top: 10px;
-                padding: 8px 16px;
+            th, td {
+                padding: 10px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="head"><h1>Hóspedes com Reservas Acima de R$2000,00</h1>
-        <a href="{{ url_for('relatorios') }}">Voltar</a></div>
-   
+    <div class="menu">
+        <a href="/index">Início</a>
+        <a href="{{ url_for('hospedes') }}">Hóspedes</a>
+        <a href="{{ url_for('reservas') }}">Reservas</a>
+        <a href="{{ url_for('quartos') }}">Quartos</a>
+        <a href="/logout">Sair</a>
+
+    </div>
+    <div class="head"><h1>Historico de logs</h1>
+        
+    
+    
     <table>
         <thead>
             <tr>
-                <th>Nome</th>
-                <th>Total</th>
+                <th>ID da reserva</th>
+                <th>ID do Usuário</th>
+                <th>Ação</th>
+                <th>Data</th>
+                <th>Detalhes</th>
             </tr>
         </thead>
         <tbody>
             {% for total in totais %}
-            <tr>
-                <td>{{ total[0] }}</td> 
+            <tr> 
                 <td>{{ total[1] }}</td> 
+                <td>{{total[4]}}</td>
+                <td>{{ total[2] }}</td>
+                <td>{{total[3]}}</td>
+                <td>{{total[5]}}</td>
             </tr>
             {% endfor %}
         </tbody>

@@ -142,6 +142,8 @@ def add_hospede():
         cpf = request.form['cpf']
         telefone = request.form['telefone']
         email = request.form['email']
+        tipo = request.form['tipo']
+        senha = request.form['senha']
 
        
         cur = mysql.connection.cursor()
@@ -156,12 +158,12 @@ def add_hospede():
             return render_template('add_hospedes.html', flash=texto)
 
         
-        cur.execute("INSERT INTO hospede (nome, cpf, telefone, email) VALUES (%s, %s, %s, %s)",
-                    (nome, cpf, telefone, email))
+        cur.execute("INSERT INTO hospede (nome, cpf, telefone, email,senha, tipo) VALUES (%s, %s, %s, %s, %s, %s)",
+                    (nome, cpf, telefone, email, senha, tipo))
         mysql.connection.commit()
         cur.close()
 
-        flash ('Hóspede adicionado com sucesso!', 'success')
+        
         return redirect(url_for('hospedes'))  
 
     user = current_user
@@ -199,7 +201,7 @@ def edit_hospede(id):
         mysql.connection.commit()
         cur.close()
 
-        flash('Dados do hóspede atualizados com sucesso!', 'success')
+        
         return redirect(url_for('hospedes'))
     user = current_user
 
@@ -482,7 +484,7 @@ def add_reserva():
 
     # Obter hóspedes e quartos para o formulário
     cur = mysql.connection.cursor()
-    cur.execute("SELECT id, nome FROM hospede")
+    cur.execute("SELECT id, nome FROM hospede WHERE tipo='usuario' ")
     hospedes = cur.fetchall()
     cur.execute("SELECT id, numero FROM quarto")
     quartos = cur.fetchall()
@@ -691,6 +693,18 @@ def nao_reservados():
             return redirect(url_for('quartos'))
     else: 
         return render_template('nao_reservados.html',totais=totais)
+
+@app.route('/logs', methods=['GET','POST'])
+def logs():
+    cur = mysql.connect.cursor()
+    query = '''
+        SELECT * FROM logs_reservas
+        '''
+    
+    cur.execute(query)
+    totais = cur.fetchall()
+    cur.close()
+    return render_template('logs.html',totais=totais)
 
 
 @app.route('/logout')

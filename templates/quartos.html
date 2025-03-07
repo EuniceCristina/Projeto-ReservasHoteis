@@ -11,15 +11,16 @@
     <div class="conteudo">
         
         <div class="menu">
-            <a href="/index">Início</a>
-            {%if barra%}
-            <a href="{{ url_for('hospedes') }}">Hóspedes</a>
-            <a href="{{ url_for('reservas') }}">Reservas</a>
+            {%if not barra%}
+                <a href="{{ url_for('hos_reservas') }}">Perfil</a>
+                
             {%else%}
-            <a href="{{ url_for('hos_reservas') }}">Perfil</a>
-            {%endif%}
+            <a href="{{ url_for('logs') }}">Histórico</a>
             
-            <a href="/logout">Sair</a>
+            <a href="{{ url_for('reservas') }}">Reservas</a>
+            {%endif%}
+                <a href="{{ url_for('quartos') }}">Quartos</a>
+                <a href="/logout">Sair</a>
     
         </div>
         <div class="container">

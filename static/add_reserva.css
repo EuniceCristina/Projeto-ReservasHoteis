@@ -1,3 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Lexend+Exa:wght@100..900&display=swap');
+
+*{
+    font-family: 'Lexend Exa';
+}
+
+
 :root {
     --cor-primaria: #007bff; 
     --cor-secundaria: #6c757d; 

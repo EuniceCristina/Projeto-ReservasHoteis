@@ -25,9 +25,11 @@
                                         {% for category, message in messages %}
                                             <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }}">
                                                 {{ message }}
+                                               
                                             </div>
                                         {% endfor %}
                                     </div>
+                                    <br>
                                 {% endif %}
                 {% endwith %}
         </div>

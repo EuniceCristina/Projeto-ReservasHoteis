@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GrandHotel</title>
-    <link rel="icon" href="{{ url_for('static', filename='images/logo.png') }}" type="image/png">
+    <link rel="icon" href="../static/images/logo.png">
     <link rel="stylesheet" href="static/index.css">
 </head>
 <body>
@@ -15,11 +15,13 @@
     </div>
 
     <div class="menu">
-        {%if barra%}
-            <a href="{{ url_for('hospedes') }}">Hóspedes</a>
-            <a href="{{ url_for('reservas') }}">Reservas</a>
-        {%else%}
+        {%if not barra%}
             <a href="{{ url_for('hos_reservas') }}">Perfil</a>
+            
+        {%else%}
+        <a href="{{ url_for('logs') }}">Histórico</a>
+        <a href="{{ url_for('hospedes') }}">Hóspedes</a>
+        <a href="{{ url_for('reservas') }}">Reservas</a>
         {%endif%}
             <a href="{{ url_for('quartos') }}">Quartos</a>
             <a href="/logout">Sair</a>

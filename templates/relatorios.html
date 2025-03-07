@@ -6,6 +6,13 @@
     <title>Relatórios Avançados</title>
     <link rel="icon" href="../static/images/logo.png">
     <style>
+
+        @import url('https://fonts.googleapis.com/css2?family=Lexend+Exa:wght@100..900&display=swap');
+
+        *{
+            font-family: 'Lexend Exa';
+        }
+
         :root {
             --cor-primaria: #2c3e50; ; 
             --cor-secundaria: #6c757d; 
@@ -165,6 +172,7 @@
 <body>
     <div class="menu">
         <a href="/index">Início</a>
+        <a href="{{ url_for('logs') }}">Histórico</a>
         <a href="{{ url_for('hospedes') }}">Hóspedes</a>
         <a href="{{ url_for('reservas') }}">Reservas</a>
         <a href="{{ url_for('quartos') }}">Quartos</a>
