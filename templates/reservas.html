@@ -4,216 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reservas</title>
-    <style>
-        :root {
-            --cor-primaria: #007bff; 
-            --cor-secundaria: #6c757d; 
-            --cor-texto: #ffffff;
-            --cor-fundo: #e9ecef; 
-            --cor-hover: #0056b3; 
-            --cor-acento: #ffd700; 
-        }
-
-        body {
-            margin: 0;
-            font-family: 'Poppins', sans-serif;
-            background-color: var(--cor-fundo);
-            color: var(--cor-secundaria);
-            line-height: 1.6;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-        }
-
-        h1 {
-            font-size: 2rem;
-            color: var(--cor-primaria);
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        h2 {
-            font-size: 1.5rem;
-            color: var(--cor-primaria);
-            margin-bottom: 20px;
-        }
-
-        a {
-            display: inline-block;
-            margin-top: 10px;
-            margin-bottom: 20px;
-            padding: 10px 20px;
-            background-color: var(--cor-secundaria);
-            color: var(--cor-texto);
-            text-decoration: none;
-            border-radius: 25px;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-            margin-right: 10px;
-        }
-
-        a:hover {
-            background-color: var(--cor-hover);
-            transform: scale(1.05);
-        }
-
-        form {
-            background-color: var(--cor-texto);
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 30px;
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 600px;
-        }
-
-        label {
-            font-size: 1rem;
-            color: var(--cor-primaria);
-            margin-right: 10px;
-        }
-
-        input, select {
-            padding: 8px;
-            margin: 10px 0;
-            width: 100%;
-            border: 1px solid var(--cor-secundaria);
-            border-radius: 5px;
-            box-sizing: border-box;
-        }
-
-        button {
-            background-color: var(--cor-primaria);
-            color: var(--cor-texto);
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-        }
-
-        button:hover {
-            background-color: var(--cor-hover);
-            transform: scale(1.05);
-        }
-
-        table {
-            width: 100%;
-            max-width: 1000px;
-            border-collapse: collapse;
-            margin: 20px 0;
-        }
-
-        th, td {
-            padding: 10px;
-            text-align: left;
-            border: 1px solid #ddd;
-        }
-
-        th {
-            background-color: var(--cor-primaria);
-            color: var(--cor-texto);
-        }
-
-        tr:nth-child(even) {
-            background-color: #f4f4f4;
-        }
-
-        tr:hover {
-            background-color: #f1f1f1;
-        }
-        .head{
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-
-            width: 90%;}
-        #confirm{
-            padding: auto;
-        }
-        #confirm form{
-            padding: 0;
-            width: 90px;
-            height: 20px;
-           background-color: var(--cor-fundo); 
-        }
-        #confirm button{
-            width: 90px;
-            height: 30px;
-            padding: 0;
-            border: 0;
-            box-shadow: 0;
-        }
-
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 1.5rem;
-            }
-
-            form {
-                padding: 15px;
-            }
-
-            table {
-                font-size: 0.9rem;
-            }
-        }
-        .menu {
-            display: flex;
-            justify-content: center;
-            background-color: var(--cor-primaria);
-            padding: 15px 0;
-            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
-            width: 100%;
-            margin-bottom: 20px;
-        }
-        
-        .menu a {
-            color: var(--cor-texto);
-            text-decoration: none;
-            font-size: 1.2rem;
-            margin: 0 15px;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-            padding: 8px 15px;
-            border-radius: 30px;
-            background-color: var(--cor-hover);
-        }
-        
-        .menu a:hover {
-            background-color: var(--cor-acento);
-            color: var(--cor-secundaria);
-            transform: scale(1.1);
-        }
-
-        .flash-messages {
-            width: 100%;
-            max-width: 600px;
-            margin: 10px auto;
-            padding: 15px;
-            text-align: center;
-        }
-
-        .alert {
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 10px;
-        }
-
-        .alert-success {
-            background-color: #28a745;
-            color: white;
-        }
-
-        .alert-error {
-            background-color: #dc3545;
-            color: white;
-        }
-
-        table td:last-child {
-            border: none;
-        }
-
-    </style>
+    <link rel="stylesheet" href="../static/quartos.css">
+    <link rel="icon" href="../static/images/logo.png">
 </head>
 <body>
     <body>
@@ -221,35 +13,41 @@
     <div class="menu">
         <a href="/index">Início</a>
         <a href="{{ url_for('hospedes') }}">Hóspedes</a>
-        <a href="{{ url_for('reservas') }}">Reservas</a>
         <a href="{{ url_for('quartos') }}">Quartos</a>
         <a href="/logout">Sair</a>
 
     </div>
-    <div>
+   
+       
+    
+
+    <div class="container">
         <div class="head">
             <h1>Lista de Reservas</h1>
     
         </div>
-    
-
-    <form method="POST" action="{{ url_for('reservas') }}">
-        <label for="checkin_filter">Filtrar por Data de Check-in:</label>
-        <input type="date" id="checkin_filter" name="checkin_filter" value="{{ checkin_filter }}">
-
-        <label for="ordem">Ordenar por checkin: </label>
-        <select name="ordem" id="ordem">
-            <option value="asc" {% if ordem == 'asc' %}selected{% endif %}>Crescente</option>
-            <option value="desc" {% if ordem == 'desc' %}selected{% endif %}>Decrescente</option>
-        </select>
-
-        <button type="submit">Filtrar</button>
-    </form>
-
-    <a href="{{url_for('add_reserva',id=0)}}">Adicionar reserva</a>
-    <a href="{{url_for('relatorios')}}">Relatórios avançados</a>
+        <form method="POST" action="{{ url_for('reservas') }}">
+            <label for="checkin_filter">Filtrar por Data de Check-in:</label>
+            <input type="date" id="checkin_filter" name="checkin_filter" value="{{ checkin_filter }}">
+            <br>
+            <label for="ordem">Ordenar por checkin: </label>
+            <select name="ordem" id="ordem">
+                <option value="asc" {% if ordem == 'asc' %}selected{% endif %}>Crescente</option>
+                <option value="desc" {% if ordem == 'desc' %}selected{% endif %}>Decrescente</option>
+            </select>
+            <br>
+            <button type="submit">Filtrar</button>
+        </form>
     
     </div>
+    <br>
+    <div>
+        <a href="{{url_for('add_reserva',id=0)}}">Adicionar reserva</a>
+    <a href="{{url_for('relatorios')}}">Relatórios avançados</a>
+    
+    
+    </div>
+    
     <br>
    
     {% with messages = get_flashed_messages(with_categories=true) %}
@@ -264,7 +62,8 @@
             {% endif %}
     {% endwith %}
 
-    <h2>Reservas Encontradas</h2>
+    <div class="div">
+        <h2>Reservas Encontradas</h2>
 
     <table>
         <thead>
@@ -276,6 +75,7 @@
                 <th>Check-Out</th>
                 <th>Valor Total</th>
                 <th>Situação</th>
+                <th>Ações</th>
             </tr>
         </thead>
         <tbody>
@@ -310,6 +110,8 @@
             {% endif %}
         </tbody>
     </table>
+    </div>
+    
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {

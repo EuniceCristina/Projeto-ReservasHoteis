@@ -111,9 +111,9 @@ def hospedes():
     cur = mysql.connection.cursor()
 
     if nome_filtro:
-        cur.execute("SELECT * FROM hospede WHERE nome LIKE %s ORDER BY nome " + order_by, (nome_filtro + '%',))
+        cur.execute("SELECT * FROM hospede WHERE nome LIKE %s and tipo = 'usuario' ORDER BY nome  " + order_by, (nome_filtro + '%',))
     else:
-        cur.execute("SELECT * FROM hospede ORDER BY nome " + order_by)
+        cur.execute("SELECT * FROM hospede WHERE tipo = 'usuario' ORDER BY nome  " + order_by)
 
     hospedes = cur.fetchall()  
     cur.close()
@@ -407,7 +407,7 @@ def hos_reservas():
 
 
 #página para adicionar reservas
-# página para adicionar reservas
+
 @app.route('/add_reserva', methods=['GET', 'POST'])
 def add_reserva():
     if request.method == 'POST':
@@ -415,27 +415,96 @@ def add_reserva():
         quarto_id = request.form['quarto_id']
         checkin = request.form['checkin']
         checkout = request.form['checkout']
+        situacao = 'Confirmada'
+       
 
         cur = mysql.connection.cursor()
 
         try:
-            checkin_date = datetime.strptime(checkin, '%Y-%m-%d').date()
-            checkout_date = datetime.strptime(checkout, '%Y-%m-%d').date()
+            # Converter as datas para DateTime
+            checkin_date = datetime.strptime(checkin, '%Y-%m-%d')
+            checkout_date = datetime.strptime(checkout, '%Y-%m-%d')
 
-            # Chamar o procedimento armazenado validar_reserva
-            cur.callproc("validar_reserva", (hos_id, quarto_id, checkin_date, checkout_date))
-            results = list(cur.stored_results())
-            if results:
-                result = results[0].fetchall()
-                if result and result[0][0] == 'Reserva inválida':
-                    flash('Reserva inválida: ' + result[0][0], 'error')
-                    return render_template('add_reserva.html', hospedes=hospedes, quartos=quartos)
+            # Garantir que checkout é depois do checkin
+            if checkout_date <= checkin_date:
+                flash('A data de check-out deve ser posterior à data de check-in.', 'error')
+                return render_template('add_reserva.html', hospedes=hospedes, quartos=quartos)
 
+            # Chamar o procedimento armazenado para validar a reserva
+            cur.callproc('validar_reserva', (hos_id, quarto_id, checkin, checkout))
+            
+            # Inserir a reserva se passar na validação
+            cur.execute("""
+                INSERT INTO reserva (hos_id, quarto_id, checkin, checkout,situacao)
+                VALUES (%s, %s, %s, %s,%s)
+            """, (hos_id, quarto_id, checkin, checkout,situacao))
+            mysql.connection.commit()
+
+            # Recuperar o ID da reserva recém-criada
+            reserva_id = cur.lastrowid
+
+            # Chamar a função MySQL para calcular o total
+            cur.execute("SELECT calcular_valor_reserva(%s)", (reserva_id,))
+            total = cur.fetchone()[0]  # O total retornado pela função MySQL
+
+            # Atualizar a reserva com o total calculado
+            cur.execute("""
+                UPDATE reserva
+                SET total = %s
+                WHERE id = %s
+            """, (total, reserva_id))
+            mysql.connection.commit()
+
+            flash('Sucesso no seu pedido de reserva!', 'success')
+
+        except Exception as e:
+            mysql.connection.rollback()
+            error_message = str(e)
+            
+            if 'Erro: O quarto já está reservado para este período.' in error_message:
+                flash('O quarto já está reservado para este período. Escolha outra data ou outro quarto.', 'error')
+            elif 'Erro: Hóspede não encontrado ou não apto para reserva.' in error_message:
+                flash('Hóspede não encontrado ou não está apto para reservar.', 'error')
+            else:
+                flash('Erro ao adicionar reserva. Tente novamente.', 'error')
+
+        finally:
+            cur.close()
+
+        # Redirecionamento conforme o tipo de usuário
+        return redirect(url_for('reservas'))  
+        
+
+    # Obter hóspedes e quartos para o formulário
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT id, nome FROM hospede")
+    hospedes = cur.fetchall()
+    cur.execute("SELECT id, numero FROM quarto")
+    quartos = cur.fetchall()
+    cur.close()
+
+    return render_template('add_reserva.html', hospedes=hospedes, quartos=quartos)
+
+#Pedir reserva
+@app.route('/pedir_reserva/<int:id>/<int:quarto_id>', methods=['GET', 'POST'])
+def pedir_reserva(id,quarto_id):
+    if request.method == 'POST':
+        hos_id = current_user.id
+        quarto_id = quarto_id
+        checkin = request.form['checkin']
+        checkout = request.form['checkout']
+
+        cur = mysql.connection.cursor()
+
+        try:
+            checkin_date = datetime.strptime(checkin, '%Y-%m-%d')
+            checkout_date = datetime.strptime(checkout, '%Y-%m-%d')
             dias = (checkout_date - checkin_date).days
 
             if dias <= 0:
                 flash('A data de check-out deve ser posterior à data de check-in.', 'error')
                 return render_template('add_reserva.html', hospedes=hospedes, quartos=quartos)
+
 
             cur.execute("SELECT preco FROM quarto WHERE id = %s", (quarto_id,))
             preco_quarto = cur.fetchone()
@@ -467,8 +536,10 @@ def add_reserva():
 
             flash('Sucesso no seu pedido de reserva!', 'success')
 
+            
+
         except Exception as e:
-            mysql.connection.rollback()
+            mysql.connection.rollback()  
             if 'Erro: O quarto já está reservado para este período.' in str(e):
                 flash('O quarto já está reservado para este período. Escolha outra data ou outro quarto.', 'error')
             else:
@@ -476,11 +547,8 @@ def add_reserva():
 
         finally:
             cur.close()
-
-        if current_user.tipo == 'administrador':
-            return redirect(url_for('reservas'))
-        else:
-            return redirect(url_for('quartos'))
+ 
+        return redirect(url_for('quartos'))
 
     cur = mysql.connection.cursor()
     cur.execute("SELECT id, nome FROM hospede")
@@ -489,7 +557,7 @@ def add_reserva():
     quartos = cur.fetchall()
     cur.close()
 
-    return render_template('add_reserva.html', hospedes=hospedes, quartos=quartos)
+    return render_template('pedir_reserva.html', hospedes=hospedes, id=id, quartos=quartos, quarto_id=quarto_id)
 
 #página para excluir reservas
 @app.route('/excluir_reserva/<int:id>', methods=['GET', 'POST'])
@@ -553,7 +621,7 @@ def confirmar_reserva(id):
 def negar_reserva(id):
     cur = mysql.connection.cursor()
 
-    cur.execute("UPDATE reserva SET situacao = 'Negada' WHERE id=%s", (id,))
+    cur.execute("DELETE FROM reserva WHERE id=%s", (id,))
     mysql.connection.commit()
     cur.close()
     return redirect(url_for('reservas'))

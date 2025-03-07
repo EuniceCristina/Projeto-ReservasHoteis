@@ -37,7 +37,9 @@
             
     </div>
      </form>
+     <br>
         <div><a id="adicionar" href="/add_hospede">Adicionar Hóspede</a></div>
+    <br>
         <table>
             
             <thead>
@@ -60,7 +62,8 @@
                     <td>{{ hospede[4] }}</td>
                     <td>
                         <a href="/edit_hospede/{{ hospede[0] }}" >Editar</a>
-                        <a href="{{ url_for('excluir_hospede', id=hospede[0]) }}" onclick="return confirm('Tem certeza que deseja excluir este hóspede?');">Excluir</a>
+                        <a style="background-color: red;" href="{{ url_for('excluir_hospede', id=hospede[0]) }}" 
+                         onclick="return confirm('Tem certeza que deseja excluir este hóspede?');">Excluir</a>
                     </td>
 
                 </tr>

@@ -55,7 +55,7 @@ body {
 }
 
 .menu a:hover {
-    background-color: var(--cor-acento);
+    background-color: var(--cor-cinza);
     color: var(--cor-secundaria);
     transform: scale(1.1);
 }

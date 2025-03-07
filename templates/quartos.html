@@ -78,9 +78,9 @@
                     <td>{{ quarto[4] }}</td>
                     <td>{{ quarto[5] }}</td>
                     {% if barra %}
-                    <td><a href="{{ url_for('excluir_quarto', id=quarto[0]) }}" onclick="return confirm('Tem certeza que deseja excluir este quarto?');">Excluir</a></td>
+                    <td><a style="background-color: red;" href="{{ url_for('excluir_quarto', id=quarto[0]) }}" onclick="return confirm('Tem certeza que deseja excluir este quarto?');">Excluir</a></td>
                     {% else %}
-                    <td><a href="{{ url_for('add_reserva',id=id)}}" onclick="return confirm('Tem certeza que deseja pedir este quarto?');">Pedir quarto</a></td>
+                    <td><a href="{{ url_for('pedir_reserva',id=id,quarto_id=quarto[0])}}";>Pedir quarto</a></td>
                     {% endif %}
                 </tr>
                 {% endfor %}
