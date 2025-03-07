@@ -30,6 +30,11 @@
             
             <label for="email">E-mail:</label>
             <input type="email" name="email" value="{{ hospede[4] }}" required>
+            <label for="tipo">Tipo de acesso:</label>
+            <select name="tipo" id="tipo">
+                <option value="usuario">Usuário</option>
+                <option value="administrador">Administrador</option>
+            </select>
     
             <button type="submit">Salvar Alterações</button>
         </form>

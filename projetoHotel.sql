@@ -93,6 +93,7 @@ DELIMITER ;
 
 -- Criar Trigger para registrar cada inserção, edição e exclusão de reserva
 
+
 CREATE TABLE logs_reservas (
     id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     reserva_id INT,
@@ -132,6 +133,7 @@ DELIMITER ;
 
 --Procedimento armazenado validar_reserva(id_hospede, id_quarto, check_in, check_out). 
 
+DELIMITER $$
 CREATE PROCEDURE validar_reserva(
     IN id_hospede INT,
     IN id_quarto INT,

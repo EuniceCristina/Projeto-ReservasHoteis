@@ -191,11 +191,11 @@ def edit_hospede(id):
         cpf = request.form['cpf']
         telefone = request.form['telefone']
         email = request.form['email']
-
+        tipo = request.form['tipo']
 
         cur = mysql.connection.cursor()
-        cur.execute("UPDATE hospede SET nome = %s, cpf = %s, telefone = %s, email = %s WHERE id = %s",
-                    (nome, cpf, telefone, email, id))
+        cur.execute("UPDATE hospede SET nome = %s, cpf = %s, telefone = %s, email = %s, tipo=%s WHERE id = %s",
+                    (nome, cpf, telefone, email, tipo, id))
         mysql.connection.commit()
         cur.close()
 
